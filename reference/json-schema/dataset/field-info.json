@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/dataset/field-info.json",
+  "title": "FieldInfo",
+  "description": "UDBX field metadata information",
+  "type": "object",
+  "required": ["name", "fieldType"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Field name (SmFieldName)"
+    },
+    "fieldType": {
+      "$ref": "../enum/field-type.json",
+      "description": "Field type"
+    },
+    "alias": {
+      "type": "string",
+      "description": "Field alias/caption (SmFieldCaption) - optional"
+    },
+    "required": {
+      "type": "boolean",
+      "description": "Whether the field is required (SmFieldbRequired) - optional"
+    },
+    "nullable": {
+      "type": "boolean",
+      "description": "Whether the field allows NULL values - optional"
+    },
+    "defaultValue": {
+      "description": "Default value for the field (SmFieldDefaultValue) - optional",
+      "anyOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "integer" },
+        { "type": "number" },
+        { "type": "string" }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

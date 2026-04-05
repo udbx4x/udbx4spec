@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/geometry/point.json",
+  "title": "PointGeometry",
+  "description": "UDBX Point geometry in GeoJSON-like format",
+  "type": "object",
+  "required": ["type", "coordinates"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "Point",
+      "description": "Geometry type identifier"
+    },
+    "coordinates": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "2D point: [x, y]"
+        },
+        {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "3D point: [x, y, z]"
+        }
+      ],
+      "description": "Point coordinates"
+    },
+    "srid": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Spatial Reference ID (optional, overrides dataset default)"
+    },
+    "hasZ": {
+      "type": "boolean",
+      "description": "Whether this geometry has Z values"
+    },
+    "bbox": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Bounding box: [minX, minY, maxX, maxY]"
+    }
+  },
+  "additionalProperties": false
+}

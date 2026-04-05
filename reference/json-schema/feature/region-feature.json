@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/feature/region-feature.json",
+  "title": "RegionFeature",
+  "description": "UDBX Region Feature - specialized Feature with MultiPolygonGeometry",
+  "type": "object",
+  "required": ["id", "geometry", "attributes"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Feature unique identifier (SmID)"
+    },
+    "geometry": {
+      "$ref": "../geometry/multi-polygon.json",
+      "description": "MultiPolygon geometry"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "User-defined field key-value pairs",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

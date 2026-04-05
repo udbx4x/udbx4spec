@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/geometry/geometry.json",
+  "title": "Geometry",
+  "description": "Union of all UDBX geometry types",
+  "oneOf": [
+    { "$ref": "./point.json" },
+    { "$ref": "./multi-line-string.json" },
+    { "$ref": "./multi-polygon.json" }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/enum/field-type.json",
+  "title": "FieldType",
+  "description": "UDBX field type classification",
+  "type": "string",
+  "enum": [
+    "boolean",
+    "byte",
+    "int16",
+    "int32",
+    "int64",
+    "single",
+    "double",
+    "date",
+    "binary",
+    "geometry",
+    "char",
+    "ntext",
+    "text",
+    "time"
+  ],
+  "enumDescriptions": {
+    "boolean": "Boolean value (0/1)",
+    "byte": "Single byte integer",
+    "int16": "16-bit signed integer",
+    "int32": "32-bit signed integer",
+    "int64": "64-bit signed integer",
+    "single": "Single precision float (IEEE 754)",
+    "double": "Double precision float (IEEE 754)",
+    "date": "Date value",
+    "binary": "Binary data (BLOB)",
+    "geometry": "Geometry BLOB (non-system field)",
+    "char": "Fixed-length character",
+    "ntext": "Unicode long text",
+    "text": "Long text",
+    "time": "Time value"
+  }
+}

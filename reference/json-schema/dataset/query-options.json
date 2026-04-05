@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/dataset/query-options.json",
+  "title": "QueryOptions",
+  "description": "UDBX dataset query and pagination options",
+  "type": "object",
+  "properties": {
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "description": "Filter by specific feature IDs (optional)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum number of results to return (optional)"
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of results to skip (optional)"
+    },
+    "bbox": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Spatial filter: bounding box [minX, minY, maxX, maxY] (optional, future)"
+    }
+  },
+  "additionalProperties": false
+}

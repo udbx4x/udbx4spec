@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/dataset/dataset-info.json",
+  "title": "DatasetInfo",
+  "description": "UDBX dataset metadata information",
+  "type": "object",
+  "required": ["id", "name", "tableName", "kind", "objectCount"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Dataset ID (SmDatasetID)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Dataset name (SmDatasetName)"
+    },
+    "tableName": {
+      "type": "string",
+      "description": "Physical table name (SmTableName)"
+    },
+    "kind": {
+      "$ref": "../enum/dataset-kind.json",
+      "description": "Dataset type classification"
+    },
+    "srid": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Spatial Reference ID (SmSRID) - null for tabular datasets"
+    },
+    "objectCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of objects in the dataset (SmObjectCount)"
+    },
+    "geometryType": {
+      "type": ["integer", "null"],
+      "description": "GAIA geoType integer value - null for tabular datasets"
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "./field-info.json"
+      },
+      "description": "Field metadata information list"
+    }
+  },
+  "additionalProperties": false
+}

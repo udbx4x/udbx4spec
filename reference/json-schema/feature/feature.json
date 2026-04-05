@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/feature/feature.json",
+  "title": "Feature",
+  "description": "Generic UDBX Feature with geometry and attributes",
+  "type": "object",
+  "required": ["id", "geometry", "attributes"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Feature unique identifier (SmID)"
+    },
+    "geometry": {
+      "$ref": "../geometry/geometry.json",
+      "description": "Geometry object"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "User-defined field key-value pairs",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

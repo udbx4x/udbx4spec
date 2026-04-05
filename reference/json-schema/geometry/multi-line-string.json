@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/geometry/multi-line-string.json",
+  "title": "MultiLineStringGeometry",
+  "description": "UDBX MultiLineString geometry in GeoJSON-like format",
+  "type": "object",
+  "required": ["type", "coordinates"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "MultiLineString",
+      "description": "Geometry type identifier"
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          ]
+        },
+        "minItems": 2,
+        "description": "LineString: array of coordinate pairs"
+      },
+      "description": "Array of LineStrings"
+    },
+    "srid": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Spatial Reference ID (optional, overrides dataset default)"
+    },
+    "hasZ": {
+      "type": "boolean",
+      "description": "Whether this geometry has Z values"
+    },
+    "bbox": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Bounding box: [minX, minY, maxX, maxY]"
+    }
+  },
+  "additionalProperties": false
+}

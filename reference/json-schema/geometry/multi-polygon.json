@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/geometry/multi-polygon.json",
+  "title": "MultiPolygonGeometry",
+  "description": "UDBX MultiPolygon geometry in GeoJSON-like format",
+  "type": "object",
+  "required": ["type", "coordinates"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "MultiPolygon",
+      "description": "Geometry type identifier"
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            ]
+          },
+          "minItems": 4,
+          "description": "Ring: array of coordinate pairs, first ring is shell, others are holes. Must have at least 4 points (closed polygon)"
+        },
+        "minItems": 1,
+        "description": "Polygon: array of rings"
+      },
+      "description": "Array of Polygons"
+    },
+    "srid": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Spatial Reference ID (optional, overrides dataset default)"
+    },
+    "hasZ": {
+      "type": "boolean",
+      "description": "Whether this geometry has Z values"
+    },
+    "bbox": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Bounding box: [minX, minY, maxX, maxY]"
+    }
+  },
+  "additionalProperties": false
+}

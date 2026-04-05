@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/enum/dataset-kind.json",
+  "title": "DatasetKind",
+  "description": "UDBX dataset type classification",
+  "type": "string",
+  "enum": [
+    "tabular",
+    "point",
+    "line",
+    "region",
+    "pointZ",
+    "lineZ",
+    "regionZ",
+    "text",
+    "cad"
+  ],
+  "enumDescriptions": {
+    "tabular": "Pure attribute table, no spatial data",
+    "point": "2D point dataset",
+    "line": "2D line dataset",
+    "region": "2D region/polygon dataset",
+    "pointZ": "3D point dataset",
+    "lineZ": "3D line dataset",
+    "regionZ": "3D region/polygon dataset",
+    "text": "Text annotation dataset",
+    "cad": "CAD dataset with custom geometry"
+  }
+}

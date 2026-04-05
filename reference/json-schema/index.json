@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/index.json",
+  "title": "UDBX Specification Schemas",
+  "description": "JSON Schema definitions for UDBX (Universal Spatial Database Extension) data types",
+  "type": "object",
+  "$defs": {
+    "geometry": {
+      "point": { "$ref": "./geometry/point.json" },
+      "multiLineString": { "$ref": "./geometry/multi-line-string.json" },
+      "multiPolygon": { "$ref": "./geometry/multi-polygon.json" },
+      "any": { "$ref": "./geometry/geometry.json" }
+    },
+    "feature": {
+      "feature": { "$ref": "./feature/feature.json" },
+      "pointFeature": { "$ref": "./feature/point-feature.json" },
+      "lineFeature": { "$ref": "./feature/line-feature.json" },
+      "regionFeature": { "$ref": "./feature/region-feature.json" },
+      "tabularRecord": { "$ref": "./feature/tabular-record.json" }
+    },
+    "dataset": {
+      "datasetInfo": { "$ref": "./dataset/dataset-info.json" },
+      "fieldInfo": { "$ref": "./dataset/field-info.json" },
+      "queryOptions": { "$ref": "./dataset/query-options.json" }
+    },
+    "enum": {
+      "datasetKind": { "$ref": "./enum/dataset-kind.json" },
+      "fieldType": { "$ref": "./enum/field-type.json" }
+    }
+  },
+  "properties": {
+    "$ref": {
+      "type": "string",
+      "enum": [
+        "./geometry/point.json",
+        "./geometry/multi-line-string.json",
+        "./geometry/multi-polygon.json",
+        "./geometry/geometry.json",
+        "./feature/feature.json",
+        "./feature/point-feature.json",
+        "./feature/line-feature.json",
+        "./feature/region-feature.json",
+        "./feature/tabular-record.json",
+        "./dataset/dataset-info.json",
+        "./dataset/field-info.json",
+        "./dataset/query-options.json",
+        "./enum/dataset-kind.json",
+        "./enum/field-type.json"
+      ],
+      "description": "Reference to a specific schema file"
+    }
+  }
+}
