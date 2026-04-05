@@ -15,8 +15,8 @@ UDBX 是超图 SuperMap 定义的一种基于 SQLite 的空间数据库扩展格
 
 | 语言 | 项目 | 状态 |
 |------|------|------|
-| Java | [udbx4j](https://github.com/zhyt1985/udbx4j) | v1.0.0 已发布，计划迁移至 v2.0.0 |
-| TypeScript | [udbx4ts](https://github.com/zhyt1985/udbx4ts) | v0.2.0 开发中，计划迁移至 v0.3.0 |
+| Java | [udbx4j](https://github.com/udbx4x/udbx4j) | v1.0.0 已发布，v2.0.0 开发中 |
+| TypeScript | [udbx4ts](https://github.com/udbx4x/udbx4ts) | v0.2.0 已发布，v0.3.0 开发中 |
 | Python | — | 规划中 |
 | C# | — | 规划中 |
 | Go | — | 规划中 |
@@ -60,5 +60,5 @@ UDBX 是超图 SuperMap 定义的一种基于 SQLite 的空间数据库扩展格
 
 ## 相关项目
 
-- [udbx4j](https://github.com/zhyt1985/udbx4j) — Java 实现
-- [udbx4ts](https://github.com/zhyt1985/udbx4ts) — TypeScript 实现（Browser + Electron）
+- [udbx4j](https://github.com/udbx4x/udbx4j) — Java 实现
+- [udbx4ts](https://github.com/udbx4x/udbx4ts) — TypeScript 实现（Browser + Electron）
