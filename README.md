@@ -28,22 +28,22 @@ UDBX 是超图 SuperMap 定义的一种基于 SQLite 的空间数据库扩展格
 - [`docs/02-geometry-model.md`](./docs/02-geometry-model.md) — GeoJSON-like 几何数据模型
 - [`docs/03-dataset-taxonomy.md`](./docs/03-dataset-taxonomy.md) — `DatasetKind` 分类与数值映射
 - [`docs/04-field-taxonomy.md`](./docs/04-field-taxonomy.md) — `FieldType` 分类与数值映射
-- `docs/05-error-taxonomy.md` — 错误/异常分类（待补充）
-- `docs/06-language-mapping.md` — 特定语言的规范映射示例（待补充）
+- [`docs/05-error-taxonomy.md`](./docs/05-error-taxonomy.md) — 错误/异常分类
+- [`docs/06-language-mapping.md`](./docs/06-language-mapping.md) — 特定语言的规范映射示例
 
 ## 参考定义
 
 - [`reference/typescript/udbx4spec.d.ts`](./reference/typescript/udbx4spec.d.ts) — 权威的 TypeScript 参考类型定义
-- `reference/json-schema/` — JSON Schema 形式的机器可读规范（待补充）
-- `reference/java/` — Java 伪接口参考（待补充）
+- [`reference/json-schema/`](./reference/json-schema/) — JSON Schema 形式的机器可读规范
+- [`reference/java/`](./reference/java/) — Java 伪接口参考
 
 ## 合规测试
 
-`compliance/` 目录包含跨语言一致性测试夹具：
+[`compliance/`](./compliance/) 目录包含跨语言一致性测试夹具：
 
-- `golden-gaia-bytes/` — 标准 GAIA 二进制 BLOB，用于验证各语言编解码器输出字节级一致
+- [`golden-gaia-bytes/`](./compliance/golden-gaia-bytes/) — 标准 GAIA 二进制 BLOB，用于验证各语言编解码器输出字节级一致
 - `compliance.udbx` — 标准测试数据库，包含已知数据集和特征
-- `java-compliance-checklist.md` / `ts-compliance-checklist.md` — 各语言实现的合规检查清单
+- [`java-compliance-checklist.md`](./compliance/java-compliance-checklist.md) / [`ts-compliance-checklist.md`](./compliance/ts-compliance-checklist.md) — 各语言实现的合规检查清单
 
 ## 当前工作进展
 
@@ -52,11 +52,12 @@ UDBX 是超图 SuperMap 定义的一种基于 SQLite 的空间数据库扩展格
 - [x] 几何数据模型（02-geometry-model）
 - [x] 数据集分类（03-dataset-taxonomy）
 - [x] 字段分类（04-field-taxonomy）
+- [x] 错误分类（05-error-taxonomy）
+- [x] 语言映射示例（06-language-mapping）
 - [x] TypeScript 参考定义（udbx4spec.d.ts）
-- [ ] 错误分类文档
-- [ ] JSON Schema 定义
-- [ ] Java 伪接口参考
-- [ ] 合规测试夹具
+- [x] JSON Schema 定义
+- [x] Java 伪接口参考
+- [x] 合规测试夹具
 
 ## 相关项目
 
