@@ -15,7 +15,7 @@ UDBX 文件格式在 `SmRegister` 系统表中使用 `SmDatasetType` 整数字�
 | `pointZ` | 101 | 3D | `SmGeometry` | 三维点数据集，存储 GAIAPointZ (geoType=1001) |
 | `lineZ` | 103 | 3D | `SmGeometry` | 三维线数据集，存储 GAIAMultiLineStringZ (geoType=1005) |
 | `regionZ` | 105 | 3D | `SmGeometry` | 三维面数据集，存储 GAIAMultiPolygonZ (geoType=1006) |
-| `text` | 7 | 2D | `SmGeometry` | 文本数据集，存储 GeoText 对象 |
+| `text` | 7 | 2D | `SmGeometry` / `SmIndexKey` | 文本数据集，`SmGeometry` 存储 GeoText，`SmIndexKey` 存储对象范围 |
 | `cad` | 149 | 2D/3D | `SmGeometry` | CAD 数据集，使用 SuperMap GeoHeader 自定义二进制格式 |
 
 ## 语言映射参考
@@ -85,11 +85,11 @@ public enum DatasetKind {
 **说明**：
 - `pointZ` / `lineZ` / `regionZ` 的 Feature 类型与 2D 版本共用（`PointFeature`、`LineFeature`、`RegionFeature`），因为 GeoJSON-like 模型通过 `coordinates` 长度或 `hasZ` 标识维度，无需独立的 Feature 类型。
 - Java 当前使用独立的 `PointZDataset`、`LineZDataset`、`RegionZDataset`，这一做法在规范中继续被接受。
-- TypeScript 当前缺失 `PointZDataset`、`LineZDataset`、`RegionZDataset`、`TextDataset`、`CadDataset`，需要在 v0.3.0 中补齐。
+- TypeScript 当前已补齐 `PointZDataset`、`LineZDataset`、`RegionZDataset`、`TextDataset` 与 `CadDataset` 的合规基线；Text / GeoText 的二进制布局以 `07-geotext-binary-layout.md` 为准。
 
 ## geometry_columns 注册要求
 
-对于所有携带几何的数据集（`point` ~ `regionZ` 和 `cad`），创建数据表后必须在 `geometry_columns` 系统表中注册几何列信息：
+对于标准 GAIA 矢量数据集（`point` ~ `regionZ`），创建数据表后必须在 `geometry_columns` 系统表中注册几何列信息：
 
 | 字段 | 说明 |
 |------|------|
@@ -100,4 +100,6 @@ public enum DatasetKind {
 | `srid` | 坐标系 ID |
 | `spatial_index_enabled` | 空间索引是否启用，UDBX 规范固定为 `0` |
 
-**注意**：`tabular` 数据集不注册 `geometry_columns`。
+**注意**：`tabular` 数据集不注册 `geometry_columns`。`cad` 数据集使用 SuperMap GeoHeader 自定义二进制格式，当前合规基线要求不注册 `geometry_columns`，这一点与 Java 参考实现和三端 roundtrip 夹具保持一致。
+
+Text 数据集是特殊矢量数据集：白皮书 3.1.5 规定 `SmGeometry` 为 `GeoText` BLOB，`SmIndexKey` 为对象范围 `GAIAPolygon`。真实样本 `data/SampleData.udbx` 和 `data/henan.udbx` 均在 `geometry_columns` 中注册 `smindexkey`，`geometry_type=3`，`srid` 与 `SmRegister.SmSRID` 一致。因此 Text 创建规则应以 `SmIndexKey` 注册为准，而不是把 `SmGeometry` 注册为普通 GAIA 几何列。

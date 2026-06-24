@@ -44,7 +44,7 @@
 | 规范名 | 参数 | 返回值 | 说明 |
 |--------|------|--------|------|
 | `list(options?)` | `QueryOptions?` | `Feature[]` / `TabularRecord[]` | 查询全部或分页/带条件查询 |
-| `getById(id)` | `number` / `int` | `Feature \| null` | 按 SmID（统一称为 `id`）查询单条 |
+| `getById(id)` | `number` / `int` | `Feature` / `TabularRecord` | 按 SmID（统一称为 `id`）查询单条；不存在时返回 not found 错误 |
 | `count()` | 无 | `number` / `int` | 返回数据集中对象总数 |
 
 ### 流式读取
@@ -76,6 +76,7 @@
 | 点要素 | `PointFeature` | `Feature<PointGeometry, TAttributes>` 的别名或特化 |
 | 线要素 | `LineFeature` | `Feature<MultiLineStringGeometry, TAttributes>` 的别名或特化 |
 | 面要素 | `RegionFeature` | `Feature<MultiPolygonGeometry, TAttributes>` 的别名或特化 |
+| 文本要素 | `TextFeature` | `Feature<TextGeometry, TAttributes>` 的别名或特化 |
 | CAD 要素 | `CadFeature` | `Feature<CadGeometry, TAttributes>` 的别名或特化 |
 | 属性记录 | `TabularRecord` | 无几何，仅包含 `id` + `attributes` |
 

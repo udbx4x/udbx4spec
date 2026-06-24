@@ -9,6 +9,8 @@
 
 ## TypeScript
 
+公开 API 稳定面以 [`08-api-stable-surface.md`](./08-api-stable-surface.md) 为准。TypeScript 可以使用 `Promise`、`AsyncIterable` 和联合类型表达语言惯用接口，但不得改变稳定面语义。例如 `getById` 找不到对象时必须 reject `UdbxNotFoundError`，不能 resolve `null`。
+
 ### 基本类型映射表
 
 | udbx4spec 类型 | TypeScript 类型 |
@@ -48,6 +50,17 @@ export interface PointGeometry {
   readonly srid?: number;
   readonly hasZ?: boolean;
   readonly bbox?: [number, number, number, number];
+}
+
+export interface TextGeometry {
+  readonly type: "Text";
+  readonly text: string;
+  readonly anchor: readonly [number, number];
+  readonly rotation?: number;
+  readonly srid?: number;
+  readonly bbox?: [number, number, number, number];
+  readonly style?: TextStyle;
+  readonly subTexts?: readonly TextSubText[];
 }
 ```
 
@@ -131,7 +144,7 @@ try {
 // core/ 中定义接口（平台无关）
 export interface DatasetClient<T> {
   list(options?: QueryOptions): Promise<T[]>;
-  getById(id: number): Promise<T | null>;
+  getById(id: number): Promise<T>;
   insert(feature: T): Promise<T>;
   // ...
 }
@@ -153,6 +166,8 @@ export class BrowserDatasetClient<T> implements DatasetClient<T> {
 ---
 
 ## Java
+
+公开 API 稳定面以 [`08-api-stable-surface.md`](./08-api-stable-surface.md) 为准。Java 可以使用同步 API、异常、`AutoCloseable` 和 Java 集合类型；`getById` 找不到对象时必须抛出 `UdbxNotFoundError`。
 
 ### 基本类型映射表
 
@@ -240,10 +255,12 @@ public interface Feature<T extends Geometry> {
 public interface PointFeature extends Feature<PointGeometry> {}
 public interface LineFeature extends Feature<MultiLineStringGeometry> {}
 public interface RegionFeature extends Feature<MultiPolygonGeometry> {}
+public interface TextFeature extends Feature<TextGeometry> {}
 
 // VectorDataset 泛型参数表示 Feature 类型
 public interface PointDataset extends VectorDataset<PointFeature> {}
 public interface LineDataset extends VectorDataset<LineFeature> {}
+public interface TextDataset extends VectorDataset<TextFeature> {}
 ```
 
 ### 异常处理
@@ -312,6 +329,16 @@ class PointGeometry:
     bbox: Optional[tuple[float, float, float, float]] = None
 
 @dataclass(frozen=True)
+class TextGeometry:
+    """文本几何对象"""
+    text: str
+    anchor: tuple[float, float]
+    type: str = "Text"
+    rotation: Optional[float] = None
+    srid: Optional[int] = None
+    bbox: Optional[tuple[float, float, float, float]] = None
+
+@dataclass(frozen=True)
 class Feature:
     """要素"""
     id: int
@@ -345,6 +372,15 @@ class PointGeometry(BaseModel):
     coordinates: tuple[float, float] | tuple[float, float, float]
     srid: int | None = None
     hasZ: bool | None = None
+    bbox: tuple[float, float, float, float] | None = None
+
+class TextGeometry(BaseModel):
+    """文本几何模型"""
+    type: Literal["Text"] = "Text"
+    text: str
+    anchor: tuple[float, float]
+    rotation: float | None = None
+    srid: int | None = None
     bbox: tuple[float, float, float, float] | None = None
 
 class Feature(BaseModel):
@@ -593,6 +629,14 @@ type PointGeometry interface {
     Z() float64
 }
 
+// TextGeometry 接口
+type TextGeometry interface {
+    Geometry
+    Text() string
+    Anchor() [2]float64
+    Rotation() *float64
+}
+
 // Feature 接口
 type Feature interface {
     Id() int
@@ -639,6 +683,15 @@ type PointGeometry struct {
     Srid        *int       `json:"srid,omitempty"`
     HasZ        *bool      `json:"hasZ,omitempty"`
     Bbox        *[4]float64 `json:"bbox,omitempty"`
+}
+
+type TextGeometry struct {
+    Type     string      `json:"type"`
+    Text     string      `json:"text"`
+    Anchor   [2]float64  `json:"anchor"`
+    Rotation *float64    `json:"rotation,omitempty"`
+    Srid     *int        `json:"srid,omitempty"`
+    Bbox     *[4]float64 `json:"bbox,omitempty"`
 }
 ```
 

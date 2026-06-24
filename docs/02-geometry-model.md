@@ -8,10 +8,22 @@
 
 ## 1. 支持的 Geometry 类型
 
-UDBX 白皮书 §4.2 定义的 GAIA 几何类型与规范类型的映射关系：
+UDBX 白皮书 §4.2 与 §4.4 定义的几何类型与规范类型的映射关系：
+
+| 物理格式 | geoType | 规范 Geometry Type | 说明 |
+|---|---:|---|---|
+| GAIA | 1 | `PointGeometry` | 2D 点 |
+| GAIA | 1001 | `PointGeometry`（`hasZ: true`） | 3D 点 |
+| GAIA | 5 | `MultiLineStringGeometry` | 2D 多线 |
+| GAIA | 1005 | `MultiLineStringGeometry`（`hasZ: true`） | 3D 多线 |
+| GAIA | 6 | `MultiPolygonGeometry` | 2D 多面 |
+| GAIA | 1006 | `MultiPolygonGeometry`（`hasZ: true`） | 3D 多面 |
+| GeoText | 7 | `TextGeometry` | 文本标注对象 |
+
+历史映射表中 GAIA 类型如下：
 
 | GAIA geoType | 规范 Geometry Type | 说明 |
-|--------------|-------------------|------|
+|---:|---|---|
 | 1 | `PointGeometry` | 2D 点 |
 | 1001 | `PointGeometry`（`hasZ: true`） | 3D 点 |
 | 5 | `MultiLineStringGeometry` | 2D 多线 |
@@ -19,7 +31,7 @@ UDBX 白皮书 §4.2 定义的 GAIA 几何类型与规范类型的映射关系�
 | 6 | `MultiPolygonGeometry` | 2D 多面 |
 | 1006 | `MultiPolygonGeometry`（`hasZ: true`） | 3D 多面 |
 
-**注意**：UDBX 的矢量数据集在物理存储上只使用 `Point`、`MultiLineString`、`MultiPolygon` 三种顶层类型（及其 Z 变体）。CAD 数据集使用自定义 GeoHeader 格式，不在 GeoJSON-like 范围内，由 `CadGeometry` 单独定义（参见 udbx4j 的 `CadGeometry` 密封接口）。
+**注意**：UDBX 的标准 GAIA 矢量数据集在物理存储上只使用 `Point`、`MultiLineString`、`MultiPolygon` 三种顶层类型（及其 Z 变体）。Text 数据集使用 GeoText 格式，由 `TextGeometry` 单独定义。CAD 数据集使用自定义 GeoHeader 格式，由 `CadGeometry` 单独定义。
 
 ## 2. GeoJSON-like 结构定义
 
@@ -76,6 +88,55 @@ interface MultiPolygonGeometry {
 - 最外层数组表示多个 `Polygon`。
 - 每个 `Polygon` 是 `Ring` 数组，其中第 0 个 `Ring` 为外环（shell），其余为内环（holes）。
 - 每个 `Ring` 是坐标点数组，首尾点必须重复（与 GeoJSON 规范一致）。
+
+### TextGeometry
+
+```typescript
+interface TextGeometry {
+  readonly type: "Text";
+  readonly text: string;
+  readonly anchor: [number, number];
+  readonly rotation?: number;
+  readonly srid?: number;
+  readonly bbox?: [number, number, number, number];
+  readonly style?: TextStyle;
+  readonly subTexts?: readonly TextSubText[];
+}
+
+interface TextSubText {
+  readonly text: string;
+  readonly anchor: [number, number];
+  readonly rotation?: number;
+}
+
+interface TextStyle {
+  readonly color?: Color;
+  readonly backgroundColor?: Color;
+  readonly fontWidth?: number;
+  readonly fontHeight?: number;
+  readonly anchor?: [number, number];
+  readonly faceName?: string;
+  readonly fixedSize?: number;
+  readonly weight?: number;
+  readonly styleFlag?: number;
+  readonly alignFlag?: number;
+}
+
+interface Color {
+  readonly a: number;
+  readonly b: number;
+  readonly g: number;
+  readonly r: number;
+}
+```
+
+- `type` 固定为 `"Text"`。
+- `text` 是跨语言交换用的主文本。若 `subTexts` 为空或未提供，`text` 对应唯一文本子对象；若存在多个子对象，`text` 应为各子对象文本按存储顺序拼接后的显示文本。
+- `anchor` 是主定位点，来自白皮书 `TextStyle.pntAnchor`；单子对象时应与唯一 `GeoSubText.pntAnchor` 一致。
+- `rotation` 使用角度值，单位为度；二进制中的 `subAngle` 是实际角度乘 10 后的整数。
+- `style.color` 和 `style.backgroundColor` 按白皮书 `Color` 结构表达，分量顺序为 ABGR。
+- `bbox` 来自 Text 数据集的 `SmIndexKey` 对象范围，或由写入实现生成。
+- Text 数据集中的 `SmGeometry` 为 GeoText BLOB，不是 GAIA 几何；`SmIndexKey` 为对象范围 polygon。
 
 ## 3. SRID 处理规则
 
@@ -152,6 +213,7 @@ export class JstsGeometryCodec {
 | `GaiaPointCodec` | `geoType=1` / `1001` |
 | `GaiaLineCodec` | `geoType=5` / `1005` |
 | `GaiaPolygonCodec` | `geoType=6` / `1006` |
+| `GeoTextCodec` | `geoType=7`，Text 数据集中的 GeoText BLOB |
 
 每个编解码器至少暴露以下方法（命名允许语言微调，如 TS 的 `readPoint` / `writePoint`，Java 的 `readPoint` / `writePoint`）：
 
@@ -174,3 +236,5 @@ export class JstsGeometryCodec {
 - 结束标记字节固定为 `0xFE`。
 
 此结构为 UDBX 白皮书 §4.2 定义，所有实现必须严格遵守。
+
+Text / GeoText 的二进制结构见 [`07-geotext-binary-layout.md`](./07-geotext-binary-layout.md)。
