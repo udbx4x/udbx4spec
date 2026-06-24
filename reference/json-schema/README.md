@@ -12,12 +12,14 @@ reference/json-schema/
 │   ├── point.json
 │   ├── multi-line-string.json
 │   ├── multi-polygon.json
+│   ├── text.json
 │   └── geometry.json       # 所有几何类型的联合
 ├── feature/                # Feature 类型 schema
 │   ├── feature.json
 │   ├── point-feature.json
 │   ├── line-feature.json
 │   ├── region-feature.json
+│   ├── text-feature.json
 │   └── tabular-record.json
 ├── dataset/                # 数据集元信息 schema
 │   ├── dataset-info.json
@@ -99,6 +101,7 @@ except ValidationError as e:
 这些 schema 对应以下规范文档：
 
 - `geometry/*.json` → `docs/02-geometry-model.md`
+- `geometry/text.json` → `docs/07-geotext-binary-layout.md`
 - `enum/dataset-kind.json` → `docs/03-dataset-taxonomy.md`
 - `enum/field-type.json` → `docs/04-field-taxonomy.md`
 - `dataset/*.json` → `docs/01-naming-conventions.md` (元信息类型命名)

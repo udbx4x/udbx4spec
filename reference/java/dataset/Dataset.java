@@ -1,6 +1,5 @@
 package com.supermap.udbx.dataset;
 
-import com.supermap.udbx.exception.UdbxError;
 import com.supermap.udbx.meta.DatasetInfo;
 
 /**
@@ -34,9 +33,10 @@ public interface Dataset {
     /**
      * 获取对象总数。
      *
-     * @return 对象数量
+     * <p>稳定 API 语义要求读取物理表真实行数，不得以
+     * SmRegister.SmObjectCount 缓存值作为公开 count() 的权威来源。</p>
+     *
+     * @return 物理表真实对象数量
      */
-    default int count() {
-        return getInfo().getObjectCount();
-    }
+    int count();
 }

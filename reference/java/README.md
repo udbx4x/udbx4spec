@@ -31,10 +31,15 @@ reference/java/
 │   ├── PointGeometry.java
 │   ├── MultiLineStringGeometry.java
 │   ├── MultiPolygonGeometry.java
+│   ├── TextGeometry.java
+│   ├── TextStyle.java
+│   ├── TextSubText.java
+│   ├── Color.java
 │   ├── Feature.java                # 泛型 Feature
 │   ├── PointFeature.java           # Feature<PointGeometry> 特化
 │   ├── LineFeature.java            # Feature<MultiLineStringGeometry> 特化
 │   ├── RegionFeature.java          # Feature<MultiPolygonGeometry> 特化
+│   ├── TextFeature.java            # Feature<TextGeometry> 特化
 │   └── TabularRecord.java          # 无几何记录
 ├── dataset/                         # 数据集类型
 │   ├── package-info.java
@@ -46,6 +51,7 @@ reference/java/
 │   ├── PointZDataset.java
 │   ├── LineZDataset.java
 │   ├── RegionZDataset.java
+│   ├── TextDataset.java
 │   ├── TabularDataset.java
 │   └── CadDataset.java
 └── codec/                           # 编解码器
@@ -53,7 +59,8 @@ reference/java/
     ├── GaiaGeometryCodec.java
     ├── GaiaPointCodec.java
     ├── GaiaLineCodec.java
-    └── GaiaPolygonCodec.java
+    ├── GaiaPolygonCodec.java
+    └── GeoTextCodec.java
 ```
 
 ## 使用说明
@@ -112,16 +119,25 @@ Stream<PointFeature> stream() throws UdbxError;
 | 规范名 | Java 实现 |
 |--------|-----------|
 | `list()` | `List<T> list(@Nullable QueryOptions options)` |
-| `getById(id)` | `@Nullable T getById(int id)` |
+| `getById(id)` | `T getById(int id)`；不存在时抛出 `UdbxNotFoundError` |
 | `stream()` | `Stream<T> stream()` |
 | `insert(feature)` | `T insert(T feature)` |
 | `insertMany(features)` | `int insertMany(List<T> features)` |
 | `update(id, changes)` | `T update(int id, FeatureChanges changes)` |
 | `delete(id)` | `boolean delete(int id)` |
-| `count()` | `int count()` (default 方法) |
+| `count()` | `int count()`；读取物理表真实行数 |
 | `id` | `int getId()` |
 | `geometry` | `TGeometry getGeometry()` |
 | `attributes` | `Map<String, Object> getAttributes()` |
+
+### 5. 稳定面约束
+
+Java 伪接口必须与 `docs/08-api-stable-surface.md` 保持一致：
+
+- `getById(id)` 找不到对象时抛出 `UdbxNotFoundError`，不得返回 `null`。
+- `list(options)` 默认按 `SmID` 升序返回；`ids` 过滤不改变排序语义。
+- `count()` 读取物理表真实行数，不以 `DatasetInfo.getObjectCount()` 或 `SmRegister.SmObjectCount` 缓存为准。
+- `update(id, ...)` 和 `delete(id)` 的目标对象不存在时抛出 `UdbxNotFoundError`。
 
 ## 相关文档
 

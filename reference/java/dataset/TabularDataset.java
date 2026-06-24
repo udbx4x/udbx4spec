@@ -1,6 +1,7 @@
 package com.supermap.udbx.dataset;
 
 import com.supermap.udbx.exception.UdbxError;
+import com.supermap.udbx.exception.UdbxNotFoundError;
 import com.supermap.udbx.feature.TabularRecord;
 import com.supermap.udbx.meta.QueryOptions;
 
@@ -42,10 +43,10 @@ public interface TabularDataset extends Dataset {
      * 按 ID 查询单条。
      *
      * @param id SmID
-     * @return 记录，不存在返回 null
+     * @return 记录
+     * @throws UdbxNotFoundError 若记录不存在
      * @throws UdbxError 查询失败时抛出
      */
-    @Nullable
     TabularRecord getById(int id) throws UdbxError;
 
     /**
@@ -80,6 +81,7 @@ public interface TabularDataset extends Dataset {
      * @param id 要更新的记录 ID
      * @param attributes 变更的属性
      * @return 更新后的记录
+     * @throws UdbxNotFoundError 若记录或字段不存在
      * @throws UdbxError 更新失败时抛出
      */
     TabularRecord update(int id, Map<String, Object> attributes) throws UdbxError;
@@ -89,6 +91,7 @@ public interface TabularDataset extends Dataset {
      *
      * @param id 要删除的记录 ID
      * @return true 如果删除成功
+     * @throws UdbxNotFoundError 若记录不存在
      * @throws UdbxError 删除失败时抛出
      */
     boolean delete(int id) throws UdbxError;

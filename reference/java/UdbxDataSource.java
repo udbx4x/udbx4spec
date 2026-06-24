@@ -1,7 +1,9 @@
 package com.supermap.udbx;
 
 import com.supermap.udbx.dataset.Dataset;
+import com.supermap.udbx.dataset.TextDataset;
 import com.supermap.udbx.meta.DatasetInfo;
+import com.supermap.udbx.meta.FieldInfo;
 import com.supermap.udbx.exception.UdbxError;
 
 import java.util.List;
@@ -45,7 +47,8 @@ public interface UdbxDataSource extends AutoCloseable {
      *
      * @param name 数据集名称
      * @param <T> 数据集类型
-     * @return 数据集实例，若不存在返回 null
+     * @return 数据集实例
+     * @throws UdbxNotFoundError 若数据集不存在
      * @throws UdbxError 获取失败时抛出
      */
     <T extends Dataset> T getDataset(String name) throws UdbxError;
@@ -57,6 +60,17 @@ public interface UdbxDataSource extends AutoCloseable {
      * @throws UdbxError 查询失败时抛出
      */
     List<DatasetInfo> listDatasets() throws UdbxError;
+
+    /**
+     * 创建文本数据集。
+     *
+     * @param name 数据集名称
+     * @param srid 坐标系 ID
+     * @param fields 用户字段
+     * @return 文本数据集
+     * @throws UdbxError 创建失败时抛出
+     */
+    TextDataset createTextDataset(String name, int srid, List<FieldInfo> fields) throws UdbxError;
 
     /**
      * 关闭数据源。

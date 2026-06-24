@@ -6,6 +6,7 @@
   "oneOf": [
     { "$ref": "./point.json" },
     { "$ref": "./multi-line-string.json" },
-    { "$ref": "./multi-polygon.json" }
+    { "$ref": "./multi-polygon.json" },
+    { "$ref": "./text.json" }
   ]
 }

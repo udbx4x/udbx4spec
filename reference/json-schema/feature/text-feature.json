@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/feature/text-feature.json",
+  "title": "TextFeature",
+  "description": "UDBX Text Feature - specialized Feature with TextGeometry",
+  "type": "object",
+  "required": ["id", "geometry", "attributes"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Feature unique identifier (SmID)"
+    },
+    "geometry": {
+      "$ref": "../geometry/text.json",
+      "description": "Text geometry"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "User-defined field key-value pairs",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,6 +1,7 @@
 package com.supermap.udbx.dataset;
 
 import com.supermap.udbx.exception.UdbxError;
+import com.supermap.udbx.exception.UdbxNotFoundError;
 import com.supermap.udbx.feature.Feature;
 import com.supermap.udbx.feature.Geometry;
 import com.supermap.udbx.meta.QueryOptions;
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 /**
  * 矢量数据集基础接口。
  *
- * <p>所有带几何的数据集（PointDataset, LineDataset, RegionDataset, *ZDataset, CadDataset）
+ * <p>所有带几何的数据集（PointDataset, LineDataset, RegionDataset, *ZDataset, TextDataset, CadDataset）
  * 的公共接口。</p>
  *
  * @param <TFeature> Feature 类型
@@ -43,10 +44,10 @@ public interface VectorDataset<TFeature extends Feature<? extends Geometry>> ext
      * 按 ID 查询单条。
      *
      * @param id SmID
-     * @return Feature，不存在返回 null
+     * @return Feature
+     * @throws UdbxNotFoundError 若 Feature 不存在
      * @throws UdbxError 查询失败时抛出
      */
-    @Nullable
     TFeature getById(int id) throws UdbxError;
 
     /**
@@ -81,6 +82,7 @@ public interface VectorDataset<TFeature extends Feature<? extends Geometry>> ext
      * @param id 要更新的 Feature ID
      * @param changes 变更对象（geometry, attributes）
      * @return 更新后的 Feature
+     * @throws UdbxNotFoundError 若 Feature 或字段不存在
      * @throws UdbxError 更新失败时抛出
      */
     TFeature update(int id, FeatureChanges changes) throws UdbxError;
@@ -90,6 +92,7 @@ public interface VectorDataset<TFeature extends Feature<? extends Geometry>> ext
      *
      * @param id 要删除的 Feature ID
      * @return true 如果删除成功
+     * @throws UdbxNotFoundError 若 Feature 不存在
      * @throws UdbxError 删除失败时抛出
      */
     boolean delete(int id) throws UdbxError;
@@ -104,3 +107,4 @@ public interface VectorDataset<TFeature extends Feature<? extends Geometry>> ext
         @Nullable
         java.util.Map<String, Object> getAttributes();
     }
+}

@@ -42,10 +42,46 @@ export interface MultiPolygonGeometry extends GeometryBase {
   >;
 }
 
+export interface Color {
+  readonly a: number;
+  readonly b: number;
+  readonly g: number;
+  readonly r: number;
+}
+
+export interface TextStyle {
+  readonly color?: Color;
+  readonly backgroundColor?: Color;
+  readonly fontWidth?: number;
+  readonly fontHeight?: number;
+  readonly anchor?: readonly [number, number];
+  readonly faceName?: string;
+  readonly fixedSize?: number;
+  readonly weight?: number;
+  readonly styleFlag?: number;
+  readonly alignFlag?: number;
+}
+
+export interface TextSubText {
+  readonly text: string;
+  readonly anchor: readonly [number, number];
+  readonly rotation?: number;
+}
+
+export interface TextGeometry extends GeometryBase {
+  readonly type: "Text";
+  readonly text: string;
+  readonly anchor: readonly [number, number];
+  readonly rotation?: number;
+  readonly style?: TextStyle;
+  readonly subTexts?: readonly TextSubText[];
+}
+
 export type Geometry =
   | PointGeometry
   | MultiLineStringGeometry
-  | MultiPolygonGeometry;
+  | MultiPolygonGeometry
+  | TextGeometry;
 
 // ============================================================================
 // 2. Feature & Record
@@ -67,6 +103,18 @@ export interface TabularRecord<
   readonly id: number;
   readonly attributes: TAttributes;
 }
+
+export type PointFeature<TAttributes extends Record<string, unknown> = Record<string, unknown>> =
+  Feature<PointGeometry, TAttributes>;
+
+export type LineFeature<TAttributes extends Record<string, unknown> = Record<string, unknown>> =
+  Feature<MultiLineStringGeometry, TAttributes>;
+
+export type RegionFeature<TAttributes extends Record<string, unknown> = Record<string, unknown>> =
+  Feature<MultiPolygonGeometry, TAttributes>;
+
+export type TextFeature<TAttributes extends Record<string, unknown> = Record<string, unknown>> =
+  Feature<TextGeometry, TAttributes>;
 
 // ============================================================================
 // 3. Metadata & Query Options
@@ -164,7 +212,7 @@ export interface Dataset<TFeature extends Feature = Feature>
 /** Read-only dataset contract */
 export interface ReadableDataset<TFeature extends Feature = Feature>
   extends Dataset<TFeature> {
-  getById(id: number): Promise<TFeature | null>;
+  getById(id: number): Promise<TFeature>;
   list(options?: QueryOptions): Promise<readonly TFeature[]>;
   iterate(options?: QueryOptions): AsyncIterable<TFeature>;
   count(): Promise<number>;
@@ -188,7 +236,7 @@ export interface WritableDataset<TFeature extends Feature = Feature>
 export interface TabularDatasetReadable {
   readonly info: DatasetInfo;
   getFields(): Promise<readonly FieldInfo[]>;
-  getById(id: number): Promise<TabularRecord | null>;
+  getById(id: number): Promise<TabularRecord>;
   list(options?: QueryOptions): Promise<readonly TabularRecord[]>;
   iterate(options?: QueryOptions): AsyncIterable<TabularRecord>;
   count(): Promise<number>;
@@ -213,7 +261,7 @@ export interface TabularDatasetWritable extends TabularDatasetReadable {
  */
 export interface UdbxDataSourceContract {
   listDatasets(): Promise<readonly DatasetInfo[]>;
-  getDataset(name: string): Promise<Dataset | null>;
+  getDataset(name: string): Promise<Dataset>;
   createPointDataset(
     name: string,
     srid: number,
@@ -267,6 +315,11 @@ export interface UdbxDataSourceContract {
 export interface GaiaGeometryCodecContract {
   decode(input: Uint8Array): Geometry;
   encode(geometry: Geometry, srid: number): Uint8Array;
+}
+
+export interface GeoTextCodecContract {
+  decode(input: Uint8Array): TextGeometry;
+  encode(geometry: TextGeometry): Uint8Array;
 }
 
 export interface GaiaPointCodecContract {

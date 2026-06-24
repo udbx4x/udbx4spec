@@ -9,6 +9,7 @@
       "point": { "$ref": "./geometry/point.json" },
       "multiLineString": { "$ref": "./geometry/multi-line-string.json" },
       "multiPolygon": { "$ref": "./geometry/multi-polygon.json" },
+      "text": { "$ref": "./geometry/text.json" },
       "any": { "$ref": "./geometry/geometry.json" }
     },
     "feature": {
@@ -16,6 +17,7 @@
       "pointFeature": { "$ref": "./feature/point-feature.json" },
       "lineFeature": { "$ref": "./feature/line-feature.json" },
       "regionFeature": { "$ref": "./feature/region-feature.json" },
+      "textFeature": { "$ref": "./feature/text-feature.json" },
       "tabularRecord": { "$ref": "./feature/tabular-record.json" }
     },
     "dataset": {
@@ -35,11 +37,13 @@
         "./geometry/point.json",
         "./geometry/multi-line-string.json",
         "./geometry/multi-polygon.json",
+        "./geometry/text.json",
         "./geometry/geometry.json",
         "./feature/feature.json",
         "./feature/point-feature.json",
         "./feature/line-feature.json",
         "./feature/region-feature.json",
+        "./feature/text-feature.json",
         "./feature/tabular-record.json",
         "./dataset/dataset-info.json",
         "./dataset/field-info.json",

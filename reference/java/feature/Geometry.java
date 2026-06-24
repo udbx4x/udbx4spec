@@ -12,13 +12,14 @@ import javax.annotation.Nullable;
  * @see PointGeometry
  * @see MultiLineStringGeometry
  * @see MultiPolygonGeometry
+ * @see TextGeometry
  */
 public interface Geometry {
 
     /**
      * 获取几何类型。
      *
-     * @return 几何类型字符串（Point, MultiLineString, MultiPolygon）
+     * @return 几何类型字符串（Point, MultiLineString, MultiPolygon, Text）
      */
     String getType();
 

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/geometry/text.json",
+  "title": "TextGeometry",
+  "description": "UDBX Text geometry in GeoText-like exchange format",
+  "type": "object",
+  "required": ["type", "text", "anchor"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "Text",
+      "description": "Geometry type identifier"
+    },
+    "text": {
+      "type": "string",
+      "description": "Main display text"
+    },
+    "anchor": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "Main anchor point [x, y]"
+    },
+    "rotation": {
+      "type": "number",
+      "description": "Rotation angle in degrees"
+    },
+    "srid": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Spatial Reference ID (optional, overrides dataset default)"
+    },
+    "bbox": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Bounding box: [minX, minY, maxX, maxY]"
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": { "$ref": "#/$defs/color" },
+        "backgroundColor": { "$ref": "#/$defs/color" },
+        "fontWidth": { "type": "number" },
+        "fontHeight": { "type": "number" },
+        "anchor": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "faceName": { "type": "string" },
+        "fixedSize": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "weight": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "styleFlag": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "alignFlag": { "type": "integer", "minimum": 0, "maximum": 255 }
+      }
+    },
+    "subTexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "anchor"],
+        "additionalProperties": false,
+        "properties": {
+          "text": { "type": "string" },
+          "anchor": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "rotation": { "type": "number" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "color": {
+      "type": "object",
+      "required": ["a", "b", "g", "r"],
+      "additionalProperties": false,
+      "properties": {
+        "a": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "b": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "g": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "r": { "type": "integer", "minimum": 0, "maximum": 255 }
+      }
+    }
+  },
+  "additionalProperties": false
+}
