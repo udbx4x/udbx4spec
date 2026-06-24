@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-24T01:57:17.102Z",
+  "status": "ready",
+  "generator": {
+    "name": "udbx4spec/tools/generate-golden-text-bytes.mjs",
+    "implementation": "udbx4spec",
+    "implementationPath": "tools/generate-golden-text-bytes.mjs"
+  },
+  "byteOrder": "little-endian",
+  "geotextLayout": "GeoHeader(geoType:int32, styleSize:int32) | subCount:int32 | TextStyle | GeoSubText[]",
+  "fixtures": [
+    {
+      "id": "geotext/simple-utf8",
+      "path": "geotext/simple-utf8.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "Text",
+      "geoType": 7,
+      "styleSize": 0,
+      "subCount": 1,
+      "text": "河南省",
+      "anchor": [
+        113.165187569688,
+        33.875453985
+      ],
+      "rotation": 0,
+      "style": {
+        "color": {
+          "a": 0,
+          "b": 0,
+          "g": 0,
+          "r": 255
+        },
+        "backgroundColor": {
+          "a": 255,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "fixedSize": 10,
+        "weight": 64,
+        "styleFlag": 6,
+        "alignFlag": 0,
+        "fontWidth": 0,
+        "fontHeight": 0.406494140625,
+        "anchor": [
+          113.165187569688,
+          33.875453985
+        ],
+        "faceName": "宋体",
+        "faceNameByteLength": 6
+      },
+      "subTexts": [
+        {
+          "text": "河南省",
+          "textByteLength": 9,
+          "anchor": [
+            113.165187569688,
+            33.875453985
+          ],
+          "rotation": 0
+        }
+      ],
+      "byteSize": 103,
+      "sha256": "98dce59a4d8bd04e39f0779c4a57ef604f4ff05b17c3d6bb534313ca975cccce",
+      "layout": {
+        "geoHeaderOffset": 0,
+        "subCountOffset": 8,
+        "textStyleOffset": 12,
+        "firstSubTextOffset": 66
+      },
+      "source": {
+        "kind": "sample-derived",
+        "file": "data/henan.udbx",
+        "dataset": "河南省标签",
+        "smid": 1
+      }
+    }
+  ]
+}

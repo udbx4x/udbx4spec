@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-24T02:03:09.407Z",
+  "status": "ready",
+  "fixtures": [
+    {
+      "id": "udbx4ts-roundtrip-v1",
+      "path": "udbx4ts-roundtrip.udbx",
+      "tier": "T2",
+      "stability": "stable",
+      "usage": [
+        "read",
+        "roundtrip"
+      ],
+      "source": "../compliance.udbx",
+      "description": "由 udbx4ts 读取标准 compliance.udbx 后重新写出的跨语言 roundtrip 夹具。",
+      "producer": {
+        "implementation": "udbx4ts",
+        "generator": "udbx4spec/tools/generate-roundtrip-fixtures.mjs",
+        "implementationPath": "../udbx4ts/dist/index.js"
+      },
+      "requiredDatasets": [
+        {
+          "name": "test_points",
+          "kind": "point",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines",
+          "kind": "line",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions",
+          "kind": "region",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_points_z",
+          "kind": "pointZ",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines_z",
+          "kind": "lineZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions_z",
+          "kind": "regionZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_tabular",
+          "kind": "tabular",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_cad",
+          "kind": "cad",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ]
+        },
+        {
+          "name": "test_text",
+          "kind": "text",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ],
+          "expectedGeometryColumn": "smindexkey",
+          "expectedGeometryType": 3
+        }
+      ],
+      "requiredFieldTypes": [
+        "text",
+        "int32",
+        "double"
+      ],
+      "expectedGeometryColumns": 7,
+      "status": "ready",
+      "byteSize": 77824,
+      "sha256": "9815e27474d3edd2e9e268acf3acb5ae9c8aca52ed5be0060111622f68291aad",
+      "fixedTimestamp": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "udbx4go-roundtrip-v1",
+      "path": "udbx4go-roundtrip.udbx",
+      "tier": "T2",
+      "stability": "stable",
+      "usage": [
+        "read",
+        "roundtrip"
+      ],
+      "source": "../compliance.udbx",
+      "description": "由 udbx4go 读取标准 compliance.udbx 后重新写出的跨语言 roundtrip 夹具。",
+      "producer": {
+        "implementation": "udbx4go",
+        "generator": "udbx4spec/tools/generate-roundtrip-fixtures.mjs",
+        "implementationPath": "../udbx4go/cmd/udbx4go-roundtrip-fixture"
+      },
+      "requiredDatasets": [
+        {
+          "name": "test_points",
+          "kind": "point",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines",
+          "kind": "line",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions",
+          "kind": "region",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_points_z",
+          "kind": "pointZ",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines_z",
+          "kind": "lineZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions_z",
+          "kind": "regionZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_tabular",
+          "kind": "tabular",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_cad",
+          "kind": "cad",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ]
+        },
+        {
+          "name": "test_text",
+          "kind": "text",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ],
+          "expectedGeometryColumn": "smindexkey",
+          "expectedGeometryType": 3
+        }
+      ],
+      "requiredFieldTypes": [
+        "text",
+        "int32",
+        "double"
+      ],
+      "expectedGeometryColumns": 7,
+      "status": "ready",
+      "byteSize": 73728,
+      "sha256": "2501c8b416ba7d4475b232eb49691ef129676aa54860d20095a184e25c5c187c",
+      "fixedTimestamp": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "udbx4j-roundtrip-v1",
+      "path": "udbx4j-roundtrip.udbx",
+      "tier": "T2",
+      "stability": "stable",
+      "usage": [
+        "read",
+        "roundtrip"
+      ],
+      "source": "../compliance.udbx",
+      "description": "由 udbx4j 读取标准 compliance.udbx 后重新写出的跨语言 roundtrip 夹具。",
+      "producer": {
+        "implementation": "udbx4j",
+        "generator": "udbx4spec/tools/generate-roundtrip-fixtures.mjs",
+        "implementationPath": "../udbx4j/src/test/java/com/supermap/udbx/integration/Udbx4SpecRoundtripFixtureGenerator.java"
+      },
+      "requiredDatasets": [
+        {
+          "name": "test_points",
+          "kind": "point",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines",
+          "kind": "line",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions",
+          "kind": "region",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_points_z",
+          "kind": "pointZ",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines_z",
+          "kind": "lineZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions_z",
+          "kind": "regionZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_tabular",
+          "kind": "tabular",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_cad",
+          "kind": "cad",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ]
+        },
+        {
+          "name": "test_text",
+          "kind": "text",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ],
+          "expectedGeometryColumn": "smindexkey",
+          "expectedGeometryType": 3
+        }
+      ],
+      "requiredFieldTypes": [
+        "text",
+        "int32",
+        "double"
+      ],
+      "expectedGeometryColumns": 7,
+      "status": "ready",
+      "byteSize": 77824,
+      "sha256": "0bb15a7801f49f0fb6558f4cbc5ad189319e3ca20f743f3833aaf86e979a47e2",
+      "fixedTimestamp": "2026-01-01T00:00:00Z"
+    }
+  ]
+}

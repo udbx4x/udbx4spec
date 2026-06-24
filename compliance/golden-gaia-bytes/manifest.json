@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-24T01:57:17.031Z",
+  "status": "ready",
+  "generator": {
+    "name": "udbx4spec/tools/generate-golden-gaia-bytes.mjs",
+    "implementation": "udbx4ts",
+    "implementationPath": "../udbx4ts/dist/index.js"
+  },
+  "byteOrder": "little-endian",
+  "gaiaHeaderLayout": "0x00 | byteOrder(0x01) | srid(int32) | MBR(4*double) | 0x7c | geoType(int32) | coords... | 0xFE",
+  "fixtures": [
+    {
+      "id": "point-2d/simple",
+      "path": "point-2d/simple.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "Point",
+      "geoType": 1,
+      "srid": 4326,
+      "hasZ": false,
+      "coordinates": [
+        116.123,
+        39.456
+      ],
+      "bbox": [
+        116.123,
+        39.456,
+        116.123,
+        39.456
+      ],
+      "byteSize": 60,
+      "sha256": "fcfd64fa852fef431828d068e1351ed6f57a147582fb7c60f459080ba9e8ff09",
+      "gaiaHeader": {
+        "start": 0,
+        "byteOrder": 1,
+        "srid": 4326,
+        "mbrOffset": 6,
+        "mbrByteLength": 32,
+        "marker": 124,
+        "geoType": 1,
+        "geometryDataOffset": 43,
+        "end": 254
+      }
+    },
+    {
+      "id": "point-3d/simple",
+      "path": "point-3d/simple.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "Point",
+      "geoType": 1001,
+      "srid": 4326,
+      "hasZ": true,
+      "coordinates": [
+        116.123,
+        39.456,
+        12.5
+      ],
+      "bbox": [
+        116.123,
+        39.456,
+        116.123,
+        39.456
+      ],
+      "byteSize": 68,
+      "sha256": "093c428632c56e6cef4055cbdebcdd56c1c03a3b87c4ca96bdfc198b6af778de",
+      "gaiaHeader": {
+        "start": 0,
+        "byteOrder": 1,
+        "srid": 4326,
+        "mbrOffset": 6,
+        "mbrByteLength": 32,
+        "marker": 124,
+        "geoType": 1001,
+        "geometryDataOffset": 43,
+        "end": 254
+      }
+    },
+    {
+      "id": "multilinestring-2d/simple",
+      "path": "multilinestring-2d/simple.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "MultiLineString",
+      "geoType": 5,
+      "srid": 4326,
+      "hasZ": false,
+      "coordinates": [
+        [
+          [
+            116.123,
+            39.456
+          ],
+          [
+            117,
+            40
+          ]
+        ]
+      ],
+      "bbox": [
+        116.123,
+        39.456,
+        117,
+        40
+      ],
+      "byteSize": 89,
+      "sha256": "230a996bc00c29d29f7f0f4c13dfa51462984b4405a9a6280a3c5b170bc9f3c0",
+      "gaiaHeader": {
+        "start": 0,
+        "byteOrder": 1,
+        "srid": 4326,
+        "mbrOffset": 6,
+        "mbrByteLength": 32,
+        "marker": 124,
+        "geoType": 5,
+        "geometryDataOffset": 43,
+        "end": 254
+      }
+    },
+    {
+      "id": "multilinestring-3d/simple",
+      "path": "multilinestring-3d/simple.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "MultiLineString",
+      "geoType": 1005,
+      "srid": 4326,
+      "hasZ": true,
+      "coordinates": [
+        [
+          [
+            116.123,
+            39.456,
+            12.5
+          ],
+          [
+            117,
+            40,
+            18.75
+          ]
+        ]
+      ],
+      "bbox": [
+        116.123,
+        39.456,
+        117,
+        40
+      ],
+      "byteSize": 105,
+      "sha256": "2726b5225bf2b67fa34bb9365b475cb6eae8f88447d2f86d22f09e172786d263",
+      "gaiaHeader": {
+        "start": 0,
+        "byteOrder": 1,
+        "srid": 4326,
+        "mbrOffset": 6,
+        "mbrByteLength": 32,
+        "marker": 124,
+        "geoType": 1005,
+        "geometryDataOffset": 43,
+        "end": 254
+      }
+    },
+    {
+      "id": "multipolygon-2d/simple",
+      "path": "multipolygon-2d/simple.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "MultiPolygon",
+      "geoType": 6,
+      "srid": 4326,
+      "hasZ": false,
+      "coordinates": [
+        [
+          [
+            [
+              116.123,
+              39.456
+            ],
+            [
+              117,
+              39.456
+            ],
+            [
+              117,
+              40
+            ],
+            [
+              116.123,
+              40
+            ],
+            [
+              116.123,
+              39.456
+            ]
+          ]
+        ]
+      ],
+      "bbox": [
+        116.123,
+        39.456,
+        117,
+        40
+      ],
+      "byteSize": 141,
+      "sha256": "d2cc413a1ab23e8b554812935bcc577482252a226c91aa0db3d0e441028f2695",
+      "gaiaHeader": {
+        "start": 0,
+        "byteOrder": 1,
+        "srid": 4326,
+        "mbrOffset": 6,
+        "mbrByteLength": 32,
+        "marker": 124,
+        "geoType": 6,
+        "geometryDataOffset": 43,
+        "end": 254
+      }
+    },
+    {
+      "id": "multipolygon-3d/simple",
+      "path": "multipolygon-3d/simple.bin",
+      "tier": "T0",
+      "stability": "stable",
+      "usage": [
+        "decode",
+        "encode"
+      ],
+      "geometryType": "MultiPolygon",
+      "geoType": 1006,
+      "srid": 4326,
+      "hasZ": true,
+      "coordinates": [
+        [
+          [
+            [
+              116.123,
+              39.456,
+              12.5
+            ],
+            [
+              117,
+              39.456,
+              13
+            ],
+            [
+              117,
+              40,
+              14
+            ],
+            [
+              116.123,
+              40,
+              13.5
+            ],
+            [
+              116.123,
+              39.456,
+              12.5
+            ]
+          ]
+        ]
+      ],
+      "bbox": [
+        116.123,
+        39.456,
+        117,
+        40
+      ],
+      "byteSize": 181,
+      "sha256": "65e7709447c14f2528233d66c878b923c3f6ac80dc44596136ae3cd65563f5a9",
+      "gaiaHeader": {
+        "start": 0,
+        "byteOrder": 1,
+        "srid": 4326,
+        "mbrOffset": 6,
+        "mbrByteLength": 32,
+        "marker": 124,
+        "geoType": 1006,
+        "geometryDataOffset": 43,
+        "end": 254
+      }
+    }
+  ]
+}

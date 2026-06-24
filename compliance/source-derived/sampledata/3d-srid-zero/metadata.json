@@ -1,0 +1,71 @@
+{
+  "source": {
+    "sample": "data/SampleData.udbx",
+    "sha256": "b3cbac16f48e4e07fec726c781c42feeff8d5fd85dad4f2381fa538f3afbde39"
+  },
+  "datasets": [
+    {
+      "name": "BaseMap_PZ",
+      "tableName": "basemap_pz",
+      "datasetKind": "pointZ",
+      "datasetType": 101,
+      "objectCount": 15,
+      "physicalRowCount": 15,
+      "smSRID": 0,
+      "smGeoColName": "SmGeometry",
+      "geometryColumn": "smgeometry",
+      "geometryType": 1001,
+      "coordDimension": 3,
+      "geometryColumnSRID": 0,
+      "spatialIndexEnabled": 0,
+      "sampleFeature": {
+        "smId": 1,
+        "geometryByteSize": 68,
+        "gaiaHeaderSRID": 0,
+        "gaiaGeoType": 1001
+      }
+    },
+    {
+      "name": "BaseMap_LZ",
+      "tableName": "basemap_lz",
+      "datasetKind": "lineZ",
+      "datasetType": 103,
+      "objectCount": 47,
+      "physicalRowCount": 47,
+      "smSRID": 0,
+      "smGeoColName": "SmGeometry",
+      "geometryColumn": "smgeometry",
+      "geometryType": 1005,
+      "coordDimension": 3,
+      "geometryColumnSRID": 0,
+      "spatialIndexEnabled": 0,
+      "sampleFeature": {
+        "smId": 1,
+        "geometryByteSize": 465,
+        "gaiaHeaderSRID": 0,
+        "gaiaGeoType": 1005
+      }
+    },
+    {
+      "name": "BaseMap_RZ",
+      "tableName": "basemap_rz",
+      "datasetKind": "regionZ",
+      "datasetType": 105,
+      "objectCount": 15,
+      "physicalRowCount": 15,
+      "smSRID": 0,
+      "smGeoColName": "SmGeometry",
+      "geometryColumn": "smgeometry",
+      "geometryType": 1006,
+      "coordDimension": 3,
+      "geometryColumnSRID": 0,
+      "spatialIndexEnabled": 0,
+      "sampleFeature": {
+        "smId": 1,
+        "geometryByteSize": 2941,
+        "gaiaHeaderSRID": 0,
+        "gaiaGeoType": 1006
+      }
+    }
+  ]
+}

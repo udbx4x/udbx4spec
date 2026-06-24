@@ -130,7 +130,7 @@
 
 - [ ] `list()` 返回所有 Feature/Record
 - [ ] `list(options)` 支持分页 (limit/offset)
-- [ ] `getById(id)` 正确返回或返回 null
+- [ ] `getById(id)` 正确返回；不存在时抛出 `UdbxNotFoundError`
 - [ ] `count()` 返回准确数量
 - [ ] `stream()` 正确实现惰性读取
 

@@ -1,6 +1,8 @@
 # Golden GAIA Bytes
 
-本目录包含标准 GAIA 二进制 BLOB，用于验证各语言编解码器输出字节级一致。
+本目录用于存放标准 GAIA 二进制 BLOB，用于验证各语言编解码器输出字节级一致。
+
+当前状态：首批最小 `.bin` 文件已经生成，并由 `manifest.json` 记录几何内容、SRID、bbox、文件大小、SHA-256 和 GAIA 头部信息。该资产用于编解码器级别的合规验证，不等同于完整 `compliance.udbx` 数据库。
 
 ## 文件说明
 
@@ -9,15 +11,19 @@
 ```
 golden-gaia-bytes/
 ├── README.md                          # 本文件
+├── manifest.json                      # 机器可读清单
 ├── point-2d/
-│   ├── simple.bin                     # 简单 2D 点
-│   └── with-srid.bin                  # 带 SRID 的 2D 点
+│   └── simple.bin                     # 简单 2D 点
 ├── point-3d/
 │   └── simple.bin                     # 简单 3D 点
 ├── multilinestring-2d/
 │   └── simple.bin                     # 简单 2D 多线
-└── multipolygon-2d/
-    └── simple-with-hole.bin           # 带内环的 2D 多边形
+├── multilinestring-3d/
+│   └── simple.bin                     # 简单 3D 多线
+├── multipolygon-2d/
+│   └── simple.bin                     # 简单 2D 多面
+└── multipolygon-3d/
+    └── simple.bin                     # 简单 3D 多面
 ```
 
 ## BLOB 格式说明
@@ -38,31 +44,25 @@ golden-gaia-bytes/
 
 **几何内容**：
 - 类型：Point (2D)
-- 坐标：[116.4074, 39.9042] (北京)
+- 坐标：[116.123, 39.456]
 - SRID：4326
+- geoType：1
 
 **预期字节序列**：
 ```
 00 01 B6 10 00 00          # 0x00 | byteOrder(0x01) | srid=4326 (小端序)
-...                         # MBR (4 doubles: 116.4074 × 4)
+...                         # MBR (4 doubles: minX=116.123, minY=39.456, maxX=116.123, maxY=39.456)
 7C                          # 分隔符 0x7c
 01 00 00 00                 # geoType = 1 (Point)
 ...                         # coordinates (2 doubles)
 FE                          # 结束标记
 ```
 
-### point-2d/with-srid.bin
-
-**几何内容**：
-- 类型：Point (2D)
-- 坐标：[0.0, 0.0]
-- SRID：3857 (Web Mercator)
-
 ### point-3d/simple.bin
 
 **几何内容**：
 - 类型：Point (3D)
-- 坐标：[116.4074, 39.9042, 50.0]
+- 坐标：[116.123, 39.456, 12.5]
 - SRID：4326
 - geoType：1001
 
@@ -70,48 +70,62 @@ FE                          # 结束标记
 
 **几何内容**：
 - 类型：MultiLineString (2D)
-- 坐标：2 条线，每条线 2 个点
+- 坐标：1 条线，2 个点
 - SRID：4326
 - geoType：5
 
-### multipolygon-2d/simple-with-hole.bin
+### multilinestring-3d/simple.bin
+
+**几何内容**：
+- 类型：MultiLineString (3D)
+- 坐标：1 条线，2 个三维点
+- SRID：4326
+- geoType：1005
+
+### multipolygon-2d/simple.bin
 
 **几何内容**：
 - 类型：MultiPolygon (2D)
-- 坐标：1 个多边形，包含 1 个外环和 1 个内环
+- 坐标：1 个多边形，包含 1 个外环
 - SRID：4326
 - geoType：6
 
+### multipolygon-3d/simple.bin
+
+**几何内容**：
+- 类型：MultiPolygon (3D)
+- 坐标：1 个三维多边形，包含 1 个外环
+- SRID：4326
+- geoType：1006
+
+## manifest
+
+`manifest.json` 是本目录的机器可读索引，字段含义如下：
+
+- `schemaVersion`：manifest 格式版本。
+- `generatedAt`：生成时间。
+- `generator`：生成脚本和来源实现。
+- `byteOrder`：统一为 `little-endian`。
+- `gaiaHeaderLayout`：GAIA 头部布局说明。
+- `fixtures`：每个 `.bin` 文件的几何内容、bbox、文件大小、SHA-256 和 GAIA 头部摘要。
+
 ## 生成 Golden Bytes
 
-### TypeScript (Node.js)
-
-```typescript
-import * as fs from 'fs';
-import { GaiaPointCodec } from 'udbx4ts';
-
-const codec = new GaiaPointCodec();
-const blob = codec.writePoint({
-  type: "Point",
-  coordinates: [116.4074, 39.9042],
-  srid: 4326
-}, 4326);
-
-fs.writeFileSync('point-2d/simple.bin', Buffer.from(blob));
+```bash
+cd udbx4spec
+node tools/generate-golden-gaia-bytes.mjs
 ```
 
-### Java
-
-```java
-import com.supermap.udbx.codec.GaiaPointCodec;
-
-GaiaPointCodec codec = new GaiaPointCodec();
-byte[] blob = codec.writePoint(pointGeometry, 4326);
-
-Files.write(Path.of("point-2d/simple.bin"), blob);
-```
+当前生成脚本使用 `../udbx4ts/dist/index.js` 中的 GAIA codec。若加载失败，先执行 `cd udbx4ts && npm run build`。
 
 ## 验证方法
+
+### 资产检查
+
+```bash
+cd udbx4spec
+node tools/check-fixtures.mjs
+```
 
 ### 字节级比较
 
@@ -124,16 +138,16 @@ diff java.hex ts.hex
 
 ### 使用合规测试框架
 
-各语言实现应提供测试用例，读取这些 golden bytes 并验证解码结果与预期几何一致。
+各语言实现应提供测试用例，读取这些 golden bytes 并验证解码结果与 `manifest.json` 中的预期几何一致。
 
 ```typescript
 // TypeScript 示例
 test('decode golden point-2d/simple.bin', () => {
   const blob = fs.readFileSync('golden-gaia-bytes/point-2d/simple.bin');
-  const geometry = codec.readPoint(blob);
+  const geometry = GaiaPointCodec.readPoint(blob);
 
   expect(geometry.type).toBe('Point');
-  expect(geometry.coordinates).toEqual([116.4074, 39.9042]);
+  expect(geometry.coordinates).toEqual([116.123, 39.456]);
   expect(geometry.srid).toBe(4326);
 });
 ```

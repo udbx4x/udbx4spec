@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-24T02:02:56.095Z",
+  "status": "ready",
+  "fixtures": [
+    {
+      "id": "compliance-udbx-v1",
+      "path": "compliance.udbx",
+      "tier": "T1",
+      "stability": "stable",
+      "usage": [
+        "read",
+        "write",
+        "roundtrip"
+      ],
+      "description": "标准合规数据库，覆盖 point/line/region/pointZ/lineZ/regionZ/tabular/cad/text 的最小可执行集成夹具。",
+      "requiredDatasets": [
+        {
+          "name": "test_points",
+          "kind": "point",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines",
+          "kind": "line",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions",
+          "kind": "region",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_points_z",
+          "kind": "pointZ",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "double"
+          ]
+        },
+        {
+          "name": "test_lines_z",
+          "kind": "lineZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_regions_z",
+          "kind": "regionZ",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_tabular",
+          "kind": "tabular",
+          "minimumFeatureCount": 2,
+          "expectedFieldTypes": [
+            "text",
+            "int32",
+            "double"
+          ]
+        },
+        {
+          "name": "test_cad",
+          "kind": "cad",
+          "minimumFeatureCount": 3,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ]
+        },
+        {
+          "name": "test_text",
+          "kind": "text",
+          "minimumFeatureCount": 1,
+          "expectedFieldTypes": [
+            "text",
+            "int32"
+          ],
+          "expectedGeometryColumn": "smindexkey",
+          "expectedGeometryType": 3
+        }
+      ],
+      "requiredFieldTypes": [
+        "text",
+        "int32",
+        "double"
+      ],
+      "expectedGeometryColumns": 7,
+      "status": "ready",
+      "byteSize": 77824,
+      "sha256": "31f5c5c9f88d433fd08e62fc1e631017de10f532975055736c426e26779d981f",
+      "generator": {
+        "name": "udbx4spec/tools/generate-compliance-db.mjs",
+        "implementation": "udbx4ts",
+        "implementationPath": "../udbx4ts/dist/index.js"
+      },
+      "fixedTimestamp": "2026-01-01T00:00:00Z"
+    }
+  ]
+}
