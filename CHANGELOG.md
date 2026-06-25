@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-25
+
+### Added
+
+- Added GeoText binary layout specification in `docs/07-geotext-binary-layout.md`.
+- Added the cross-language minimal stable public API surface in `docs/08-api-stable-surface.md`.
+- Added `compliance/compliance.udbx` as the shared compliance database for SDK release gates.
+- Added golden GAIA bytes manifest and fixtures for 2D/3D Point, MultiLineString, and MultiPolygon.
+- Added golden GeoText bytes manifest and UTF-8 baseline fixture.
+- Added three-language roundtrip fixtures for Java, TypeScript, and Go.
+- Added source-derived stable T3 fixtures from `SampleData.udbx`, including CAD, GeoText, and 3D SRID metadata evidence.
+- Added compliance fixture tools under `tools/` for generating and checking golden bytes, compliance database, roundtrip fixtures, and source-derived fixtures.
+
+### Changed
+
+- Aligned Java reference interfaces, TypeScript definitions, and JSON Schema with the stable API surface.
+- Expanded geometry model documentation with GeoText, CAD baseline, SRID, Z, and bbox guidance.
+- Clarified DatasetKind support boundaries and language mapping rules for Java, TypeScript, and Go.
+- Updated compliance documentation to describe fixture tiers, manifests, roundtrip matrix, and release-gate usage.
+
+### Release Gate
+
+The `1.1.0` release requires the following local gate to pass:
+
+```bash
+node tools/generate-golden-gaia-bytes.mjs
+node tools/generate-golden-text-bytes.mjs
+node tools/generate-compliance-db.mjs
+node tools/generate-roundtrip-fixtures.mjs
+node tools/check-fixtures.mjs
+```
+
 ## [1.0.0] - 2026-04-05
 
 ### Added
@@ -35,3 +67,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CRUD Operations**: Unified list(), getById(), insert(), insertMany(), update(), delete() API
 
 [1.0.0]: https://github.com/udbx4x/udbx4spec/releases/tag/v1.0.0
+[1.1.0]: https://github.com/udbx4x/udbx4spec/releases/tag/v1.1.0
