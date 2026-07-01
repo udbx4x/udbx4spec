@@ -90,6 +90,21 @@
 | `udbx4ts` | 已接入 | 已接入 | 已接入 | 已接入 | 已接入三实现闭环 | Web/Node 主实现；当前基线覆盖 2D/3D 矢量、tabular、Text / GeoText 与 CAD 最小 GeoHeader，已生成 `udbx4ts-roundtrip.udbx`，并读取 manifest 中全部 roundtrip 夹具；已接入 T3 stable GeoText bytes、CAD Point/Line/Region bytes、3D metadata-json 和 `SampleData.udbx` 真实样本读取测试；公开 API 最小稳定面已统一 `getDataset/getById` rejected not found、`list` 升序、`count` 物理表计数、`update/delete` 缺失对象错误和未知字段错误语义 |
 | `udbx4go` | 已接入 | 已接入 | 已接入 | 已接入 | 已接入三实现闭环 | Go 实现；当前基线覆盖 2D/3D 矢量、tabular、Text / GeoText 与 CAD 最小 GeoHeader，已生成 `udbx4go-roundtrip.udbx`，并读取 `udbx4ts-roundtrip.udbx`、`udbx4go-roundtrip.udbx`、`udbx4j-roundtrip.udbx`；已接入 T3 stable GeoText bytes、CAD Point/Line/Region bytes、3D metadata-json 和 `SampleData.udbx` 真实样本读取测试，并统一非法 UTF-8 逐字节替换语义；公开 API 最小稳定面已统一 `GetDataset/GetByID` not found error、`List` 升序、`Count` 物理表计数、`Update/Delete` 缺失对象错误和未知字段错误语义 |
 
+## 5.1 M4 六组合状态
+
+路线图 M4 要求 Java、TypeScript、Go 三端两两互读写。当前三份 roundtrip 夹具均由 `compliance.udbx` 语义写出，覆盖 `point`、`line`、`region`、`pointZ`、`lineZ`、`regionZ`、`tabular`、`cad`、`text`。六个有向组合状态如下：
+
+| 写出实现 | 读取实现 | 夹具 | 自动化证据 | 状态 |
+|---|---|---|---|---|
+| Java | TypeScript | `roundtrip/udbx4j-roundtrip.udbx` | `udbx4ts/tests/integration/udbx4spec-compliance.integration.spec.ts` 读取 roundtrip manifest 全部夹具 | ✅ 已验证 |
+| Java | Go | `roundtrip/udbx4j-roundtrip.udbx` | `udbx4go/udbx4spec_compliance_test.go` 的 `TestUdbx4SpecUdbx4JRoundtripDatabaseRead` | ✅ 已验证 |
+| TypeScript | Java | `roundtrip/udbx4ts-roundtrip.udbx` | `udbx4j/src/test/java/com/supermap/udbx/integration/Udbx4SpecComplianceDatabaseReadTest.java` 的 `should_read_udbx4ts_roundtrip_database` | ✅ 已验证 |
+| TypeScript | Go | `roundtrip/udbx4ts-roundtrip.udbx` | `udbx4go/udbx4spec_compliance_test.go` 的 `TestUdbx4SpecUdbx4TsRoundtripDatabaseRead` | ✅ 已验证 |
+| Go | Java | `roundtrip/udbx4go-roundtrip.udbx` | `udbx4j/src/test/java/com/supermap/udbx/integration/Udbx4SpecComplianceDatabaseReadTest.java` 的 `should_read_udbx4go_roundtrip_database` | ✅ 已验证 |
+| Go | TypeScript | `roundtrip/udbx4go-roundtrip.udbx` | `udbx4ts/tests/integration/udbx4spec-compliance.integration.spec.ts` 读取 roundtrip manifest 全部夹具 | ✅ 已验证 |
+
+当前 M4 状态：最小合规基线已完成。后续 M4 扩展不再追求重复证明六个基础组合，而应在新增 DatasetKind、复杂 Text/CAD 行为或新的 T3 stable 夹具时同步扩展 roundtrip manifest 和三端读取测试。
+
 ## 6. 发版门禁建议
 
 ### `udbx4spec`
