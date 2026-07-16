@@ -1,3 +1,6 @@
+/// <reference lib="es2015.iterable" />
+/// <reference lib="es2018.asynciterable" />
+
 /**
  * udbx4spec — Cross-Language UDBX Reader/Writer API Specification
  * TypeScript Reference Definitions (Authoritative)

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
+import Ajv2020 from "ajv/dist/2020.js";
 import { execFile } from "node:child_process";
-import { constants as fsConstants } from "node:fs";
-import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import test from "node:test";
 import os from "node:os";
 import path from "node:path";
-import { isDeepStrictEqual, promisify } from "node:util";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
@@ -13,40 +13,16 @@ const specDir = path.resolve(toolsDir, "..");
 const schemaDir = path.join(specDir, "reference", "json-schema");
 const javaDir = path.join(specDir, "reference", "java");
 const typescriptPath = path.join(specDir, "reference", "typescript", "udbx4spec.d.ts");
+const typescriptCompilerPath = path.join(specDir, "node_modules", ".bin", "tsc");
 const execFileAsync = promisify(execFile);
 const schemaIdBase = "https://github.com/udbx4x/udbx4spec/schemas/";
-const schemaRoots = [
-  "spatial/bounding-box.json",
-  "dataset/spatial-query-options.json",
-  "dataset/spatial-query-result.json",
-  "enum/spatial-query-strategy.json",
-  "enum/spatial-query-reason.json",
-];
-const schemaAnnotations = new Set([
-  "$schema",
-  "$id",
-  "$comment",
-  "title",
-  "description",
-  "default",
-  "examples",
-  "deprecated",
-  "readOnly",
-  "writeOnly",
-]);
-const supportedSchemaKeywords = new Set([
-  "$ref",
-  "type",
-  "required",
-  "properties",
-  "additionalProperties",
-  "minimum",
-  "uniqueItems",
-  "items",
-  "enum",
-  "minItems",
-  "maxItems",
-]);
+const contractSchemaIds = {
+  boundingBox: `${schemaIdBase}spatial/bounding-box.json`,
+  options: `${schemaIdBase}dataset/spatial-query-options.json`,
+  result: `${schemaIdBase}dataset/spatial-query-result.json`,
+  datasetInfo: `${schemaIdBase}dataset/dataset-info.json`,
+};
+let contractValidatorsPromise;
 
 const strategyValues = ["rtree", "envelope_cache", "bounded_sample"];
 const reasonValues = [
@@ -81,248 +57,45 @@ async function listFiles(root, extension) {
   return nested.flat().sort();
 }
 
-async function findTypeScriptCompiler() {
-  if (process.env.TSC) {
-    try {
-      await access(process.env.TSC, fsConstants.X_OK);
-      return process.env.TSC;
-    } catch {
-      throw new Error(`TSC is not executable: ${process.env.TSC}`);
-    }
-  }
+async function loadContractValidators() {
+  if (!contractValidatorsPromise) {
+    contractValidatorsPromise = (async () => {
+      const ajv = new Ajv2020({ allErrors: true, strict: false });
+      const schemaFiles = await listFiles(schemaDir, ".json");
+      const schemas = await Promise.all(
+        schemaFiles.map(async (schemaFile) => {
+          const schema = JSON.parse(await readFile(schemaFile, "utf8"));
+          const relativePath = path.relative(schemaDir, schemaFile).split(path.sep).join("/");
+          assert.equal(schema.$id, `${schemaIdBase}${relativePath}`, `$id must match ${relativePath}`);
+          return schema;
+        }),
+      );
+      for (const schema of schemas) {
+        ajv.addSchema(schema);
+      }
 
-  try {
-    await execFileAsync("tsc", ["--version"]);
-    return "tsc";
-  } catch (error) {
-    if (error.code !== "ENOENT") {
-      throw error;
-    }
+      const validators = {};
+      for (const [name, schemaId] of Object.entries(contractSchemaIds)) {
+        const validate = ajv.getSchema(schemaId);
+        assert.ok(validate, `Ajv must compile ${schemaId}`);
+        validators[name] = validate;
+      }
+      return { ajv, schemas, validators };
+    })();
   }
-
-  const candidates = [
-    path.resolve(specDir, "..", "udbx4ts", "node_modules", ".bin", "tsc"),
-    path.resolve(specDir, "..", "..", "udbx4ts", "node_modules", ".bin", "tsc"),
-  ];
-  for (const candidate of candidates) {
-    try {
-      await access(candidate, fsConstants.X_OK);
-      return candidate;
-    } catch {
-      // Continue to the next documented workspace layout.
-    }
-  }
-
-  throw new Error("TypeScript compiler not found; set TSC=/absolute/path/to/tsc");
+  return contractValidatorsPromise;
 }
 
-function collectSchemaRefs(value, refs = []) {
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      collectSchemaRefs(item, refs);
-    }
-  } else if (value && typeof value === "object") {
-    if (typeof value.$ref === "string") {
-      refs.push(value.$ref);
-    }
-    for (const nested of Object.values(value)) {
-      collectSchemaRefs(nested, refs);
-    }
-  }
-  return refs;
+function assertAjvValid(validate, instance) {
+  assert.equal(validate(instance), true, JSON.stringify(validate.errors, null, 2));
 }
 
-function schemaRelativePath(absolutePath) {
-  const relativePath = path.relative(schemaDir, absolutePath);
+function assertAjvInvalid(validate, instance, expectedKeyword) {
+  assert.equal(validate(instance), false, "instance must be rejected");
   assert.ok(
-    relativePath && !relativePath.startsWith("..") && !path.isAbsolute(relativePath),
-    `schema ref must stay inside ${schemaDir}: ${absolutePath}`,
+    validate.errors?.some((error) => error.keyword === expectedKeyword),
+    JSON.stringify(validate.errors, null, 2),
   );
-  return relativePath.split(path.sep).join("/");
-}
-
-function resolveSchemaRef(sourcePath, reference) {
-  const hashIndex = reference.indexOf("#");
-  const fileReference = hashIndex === -1 ? reference : reference.slice(0, hashIndex);
-  const fragment = hashIndex === -1 ? "" : reference.slice(hashIndex + 1);
-  return {
-    path: fileReference ? path.resolve(path.dirname(sourcePath), fileReference) : sourcePath,
-    fragment,
-  };
-}
-
-function resolveSchemaPointer(schema, fragment) {
-  if (!fragment) {
-    return schema;
-  }
-  assert.ok(fragment.startsWith("/"), `only JSON Pointer fragments are supported: #${fragment}`);
-  return fragment
-    .slice(1)
-    .split("/")
-    .map((token) => decodeURIComponent(token).replaceAll("~1", "/").replaceAll("~0", "~"))
-    .reduce((current, token) => {
-      assert.ok(current && Object.hasOwn(current, token), `unresolved schema pointer: #${fragment}`);
-      return current[token];
-    }, schema);
-}
-
-async function loadSchemaGraph(rootPaths) {
-  const graph = new Map();
-
-  async function visit(absolutePath) {
-    const normalizedPath = path.resolve(absolutePath);
-    if (graph.has(normalizedPath)) {
-      return;
-    }
-    const relativePath = schemaRelativePath(normalizedPath);
-    const schema = JSON.parse(await readFile(normalizedPath, "utf8"));
-    assert.equal(schema.$id, `${schemaIdBase}${relativePath}`, `$id must match ${relativePath}`);
-    graph.set(normalizedPath, { path: normalizedPath, relativePath, schema });
-    for (const reference of collectSchemaRefs(schema)) {
-      await visit(resolveSchemaRef(normalizedPath, reference).path);
-    }
-  }
-
-  for (const rootPath of rootPaths) {
-    await visit(path.join(schemaDir, rootPath));
-  }
-  return graph;
-}
-
-function matchesSchemaType(instance, type) {
-  switch (type) {
-    case "array":
-      return Array.isArray(instance);
-    case "object":
-      return instance !== null && typeof instance === "object" && !Array.isArray(instance);
-    case "integer":
-      return Number.isInteger(instance);
-    case "number":
-      return typeof instance === "number" && Number.isFinite(instance);
-    case "string":
-      return typeof instance === "string";
-    case "boolean":
-      return typeof instance === "boolean";
-    case "null":
-      return instance === null;
-    default:
-      throw new Error(`Unsupported schema type: ${type}`);
-  }
-}
-
-function validateSchemaInstance(node, instance, graph, instancePath = "$") {
-  const { schema } = node;
-  const errors = [];
-  const declaredTypes = schema.type === undefined
-    ? undefined
-    : Array.isArray(schema.type)
-      ? schema.type
-      : [schema.type];
-
-  if (declaredTypes && !declaredTypes.some((type) => matchesSchemaType(instance, type))) {
-    return [`${instancePath} must have type ${declaredTypes.join(" or ")}`];
-  }
-
-  for (const keyword of Object.keys(schema)) {
-    if (!schemaAnnotations.has(keyword) && !supportedSchemaKeywords.has(keyword)) {
-      throw new Error(`Unsupported schema keyword "${keyword}" affects ${instancePath}`);
-    }
-  }
-
-  if (schema.$ref) {
-    const reference = resolveSchemaRef(node.path, schema.$ref);
-    const target = graph.get(reference.path);
-    assert.ok(target, `schema graph must contain ${schema.$ref}`);
-    errors.push(
-      ...validateSchemaInstance(
-        { ...target, schema: resolveSchemaPointer(target.schema, reference.fragment) },
-        instance,
-        graph,
-        instancePath,
-      ),
-    );
-  }
-
-  if (schema.enum && !schema.enum.some((value) => isDeepStrictEqual(value, instance))) {
-    errors.push(`${instancePath} must be one of ${schema.enum.join(", ")}`);
-  }
-  if (schema.minimum !== undefined && instance < schema.minimum) {
-    errors.push(`${instancePath} must be >= ${schema.minimum}`);
-  }
-
-  if (Array.isArray(instance)) {
-    if (schema.minItems !== undefined && instance.length < schema.minItems) {
-      errors.push(`${instancePath} must contain at least ${schema.minItems} items`);
-    }
-    if (schema.maxItems !== undefined && instance.length > schema.maxItems) {
-      errors.push(`${instancePath} must contain at most ${schema.maxItems} items`);
-    }
-    if (schema.uniqueItems) {
-      for (let left = 0; left < instance.length; left += 1) {
-        for (let right = left + 1; right < instance.length; right += 1) {
-          if (isDeepStrictEqual(instance[left], instance[right])) {
-            errors.push(`${instancePath} items must be unique`);
-          }
-        }
-      }
-    }
-    if (schema.items) {
-      const itemNode = { path: node.path, relativePath: node.relativePath, schema: schema.items };
-      instance.forEach((item, index) => {
-        errors.push(...validateSchemaInstance(itemNode, item, graph, `${instancePath}[${index}]`));
-      });
-    }
-  }
-
-  if (instance !== null && typeof instance === "object" && !Array.isArray(instance)) {
-    for (const requiredProperty of schema.required ?? []) {
-      if (!Object.hasOwn(instance, requiredProperty)) {
-        errors.push(`${instancePath}.${requiredProperty} is required`);
-      }
-    }
-    for (const [propertyName, propertySchema] of Object.entries(schema.properties ?? {})) {
-      if (Object.hasOwn(instance, propertyName)) {
-        const propertyNode = {
-          path: node.path,
-          relativePath: node.relativePath,
-          schema: propertySchema,
-        };
-        errors.push(
-          ...validateSchemaInstance(
-            propertyNode,
-            instance[propertyName],
-            graph,
-            `${instancePath}.${propertyName}`,
-          ),
-        );
-      }
-    }
-    if (schema.additionalProperties === false) {
-      const propertyNames = new Set(Object.keys(schema.properties ?? {}));
-      for (const instanceProperty of Object.keys(instance)) {
-        if (!propertyNames.has(instanceProperty)) {
-          errors.push(`${instancePath}.${instanceProperty} is not allowed`);
-        }
-      }
-    }
-  }
-
-  return errors;
-}
-
-function schemaNode(graph, relativePath) {
-  const node = graph.get(path.join(schemaDir, relativePath));
-  assert.ok(node, `schema graph must contain ${relativePath}`);
-  return node;
-}
-
-function assertSchemaValid(graph, relativePath, instance) {
-  assert.deepEqual(validateSchemaInstance(schemaNode(graph, relativePath), instance, graph), []);
-}
-
-function assertSchemaInvalid(graph, relativePath, instance, expectedError) {
-  const errors = validateSchemaInstance(schemaNode(graph, relativePath), instance, graph);
-  assert.ok(errors.some((error) => error.includes(expectedError)), errors.join("\n"));
 }
 
 function validateBoundingBoxRuntime(bounds) {
@@ -420,127 +193,145 @@ test("Java enum package and documentation use com.supermap.udbx.enums", async ()
 });
 
 test("TypeScript reference compiles with a real tsc", async () => {
-  const tsc = await findTypeScriptCompiler();
   await execFileAsync(
-    tsc,
-    ["--noEmit", "--skipLibCheck", "--target", "ES2020", typescriptPath],
+    typescriptCompilerPath,
+    ["--noEmit", typescriptPath],
     { maxBuffer: 1024 * 1024 },
   );
 });
 
-test("new schema refs resolve recursively and IDs match their files", async () => {
-  const graph = await loadSchemaGraph(schemaRoots);
+test("Ajv compiles the complete spatial query reference graph", async () => {
+  const { schemas, validators } = await loadContractValidators();
+  const schemaFiles = await listFiles(schemaDir, ".json");
 
-  for (const root of schemaRoots) {
-    assert.ok(graph.has(path.join(schemaDir, root)), `schema graph must contain root ${root}`);
+  assert.equal(schemas.length, schemaFiles.length, "register every JSON Schema by $id");
+  for (const [name, validate] of Object.entries(validators)) {
+    assert.equal(typeof validate, "function", `Ajv must compile ${name}`);
   }
-  assert.ok(graph.size > schemaRoots.length, "schema graph must recursively include referenced files");
 });
 
-test("spatial query schemas validate positive instances", async () => {
-  const graph = await loadSchemaGraph(schemaRoots);
+test("Ajv validates real Point Feature and spatial query positive instances", async () => {
+  const { validators } = await loadContractValidators();
   const zeroAreaBounds = { minX: 4, minY: 7, maxX: 4, maxY: 7 };
+  const pointFeature = {
+    id: 1,
+    geometry: { type: "Point", coordinates: [116.4, 39.9] },
+    attributes: { name: "sample" },
+  };
 
-  assertSchemaValid(graph, "spatial/bounding-box.json", zeroAreaBounds);
+  assertAjvValid(validators.boundingBox, zeroAreaBounds);
   assert.deepEqual(validateBoundingBoxRuntime(zeroAreaBounds), zeroAreaBounds);
-  assertSchemaValid(graph, "dataset/spatial-query-options.json", {
+  assertAjvValid(validators.options, {
     bounds: zeroAreaBounds,
     limit: 25,
     requiredIds: [1, 9],
   });
-  assertSchemaValid(graph, "dataset/spatial-query-result.json", {
-    features: [],
+  assertAjvValid(validators.result, {
+    features: [pointFeature],
     queriedBounds: zeroAreaBounds,
     strategy: "envelope_cache",
     hasMore: false,
     degradedReason: "spatial_index_unavailable",
   });
+  assertAjvValid(validators.datasetInfo, {
+    id: 1,
+    name: "sample_points",
+    tableName: "sample_points",
+    kind: "point",
+    srid: 4326,
+    objectCount: 1,
+    geometryType: 1,
+    extent: zeroAreaBounds,
+    fields: [],
+  });
 });
 
-test("spatial query schemas reject invalid options and results", async () => {
-  const graph = await loadSchemaGraph(schemaRoots);
+test("Ajv rejects invalid Point Feature, options, and results", async () => {
+  const { validators } = await loadContractValidators();
   const bounds = { minX: 0, minY: 0, maxX: 10, maxY: 10 };
+  const pointFeature = {
+    id: 1,
+    geometry: { type: "Point", coordinates: [1, 2] },
+    attributes: {},
+  };
+  const result = {
+    features: [pointFeature],
+    queriedBounds: bounds,
+    strategy: "rtree",
+    hasMore: false,
+  };
 
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-options.json",
+  assertAjvInvalid(
+    validators.result,
+    { ...result, features: [{ ...pointFeature, geometry: { type: "Point", coordinates: [1] } }] },
+    "oneOf",
+  );
+  assertAjvInvalid(
+    validators.result,
+    { ...result, features: [{ ...pointFeature, geometry: { type: "LineString", coordinates: [1, 2] } }] },
+    "oneOf",
+  );
+  const { attributes, ...featureWithoutAttributes } = pointFeature;
+  assert.deepEqual(attributes, {});
+  assertAjvInvalid(
+    validators.result,
+    { ...result, features: [featureWithoutAttributes] },
+    "required",
+  );
+
+  assertAjvInvalid(
+    validators.options,
     { bounds, limit: 0 },
-    "must be >= 1",
+    "minimum",
   );
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-options.json",
+  assertAjvInvalid(
+    validators.options,
     { bounds, limit: 1, requiredIds: [2, 2] },
-    "items must be unique",
+    "uniqueItems",
   );
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-options.json",
+  assertAjvInvalid(
+    validators.options,
     { bounds, limit: 1, requiredIds: [0] },
-    "must be >= 1",
+    "minimum",
   );
-  assertSchemaInvalid(graph, "dataset/spatial-query-options.json", { limit: 1 }, "bounds is required");
-  assertSchemaInvalid(graph, "dataset/spatial-query-options.json", { bounds }, "limit is required");
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-options.json",
+  assertAjvInvalid(validators.options, { limit: 1 }, "required");
+  assertAjvInvalid(validators.options, { bounds }, "required");
+  assertAjvInvalid(
+    validators.options,
     { bounds, limit: 1, offset: 0 },
-    "offset is not allowed",
+    "additionalProperties",
   );
 
-  const result = { features: [], queriedBounds: bounds, strategy: "rtree", hasMore: false };
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-result.json",
+  assertAjvInvalid(
+    validators.result,
     { ...result, strategy: "scan" },
-    "must be one of",
+    "enum",
   );
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-result.json",
+  assertAjvInvalid(
+    validators.result,
     { ...result, degradedReason: "unknown" },
-    "must be one of",
+    "enum",
   );
   const { hasMore, ...missingHasMore } = result;
   assert.equal(hasMore, false);
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-result.json",
-    missingHasMore,
-    "hasMore is required",
-  );
-  assertSchemaInvalid(
-    graph,
-    "dataset/spatial-query-result.json",
+  assertAjvInvalid(validators.result, missingHasMore, "required");
+  assertAjvInvalid(
+    validators.result,
     { ...result, total: 100 },
-    "total is not allowed",
+    "additionalProperties",
   );
-  assertSchemaInvalid(
-    graph,
-    "spatial/bounding-box.json",
+  assertAjvInvalid(
+    validators.boundingBox,
     { ...bounds, srid: 4326 },
-    "srid is not allowed",
-  );
-});
-
-test("limited schema validator fails on active unsupported keywords", () => {
-  const node = {
-    path: path.join(schemaDir, "unsupported-test.json"),
-    relativePath: "unsupported-test.json",
-    schema: { type: "string", pattern: "^viewport$" },
-  };
-
-  assert.throws(
-    () => validateSchemaInstance(node, "viewport", new Map()),
-    /Unsupported schema keyword "pattern" affects \$/,
+    "additionalProperties",
   );
 });
 
 test("BoundingBox ordering and non-JSON numbers remain runtime concerns", async () => {
-  const graph = await loadSchemaGraph(schemaRoots);
+  const { validators } = await loadContractValidators();
   const reversedBounds = { minX: 5, minY: 0, maxX: 4, maxY: 10 };
 
-  assertSchemaValid(graph, "spatial/bounding-box.json", reversedBounds);
+  assertAjvValid(validators.boundingBox, reversedBounds);
   assert.throws(() => validateBoundingBoxRuntime(reversedBounds), /must be ordered/);
   assert.throws(
     () => JSON.parse('{"minX":NaN,"minY":0,"maxX":1,"maxY":1}'),
