@@ -141,7 +141,7 @@
 - `text`
 - `cad`
 
-**Java v2.0.0 映射**：`DatasetType` 重命名为 `DatasetKind`，枚举常量使用大写下划线（如 `DatasetKind.POINT`、`DatasetKind.POINT_Z`）。
+**Java v2.0.0 映射**：`DatasetType` 重命名为 `DatasetKind`，放在 `com.supermap.udbx.enums` 包中；枚举常量使用大写下划线（如 `DatasetKind.POINT`、`DatasetKind.POINT_Z`）。
 
 ### FieldType
 
@@ -162,7 +162,7 @@
 - `text`
 - `time`
 
-**Java v2.0.0 映射**：`FieldType.BOOLEAN`、`FieldType.INT16` 等。
+**Java v2.0.0 映射**：`FieldType` 放在 `com.supermap.udbx.enums` 包中，常量使用 `FieldType.BOOLEAN`、`FieldType.INT16` 等。
 
 ### 空间查询枚举
 

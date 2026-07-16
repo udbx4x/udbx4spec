@@ -173,7 +173,7 @@ export class BrowserDatasetClient<T> implements DatasetClient<T> {
 
 ## Java
 
-公开 API 稳定面以 [`08-api-stable-surface.md`](./08-api-stable-surface.md) 为准。Java 可以使用同步 API、异常、`AutoCloseable` 和 Java 集合类型；`getById` 找不到对象时必须抛出 `UdbxNotFoundError`。
+公开 API 稳定面以 [`08-api-stable-surface.md`](./08-api-stable-surface.md) 为准。Java 可以使用同步 API、异常、`AutoCloseable` 和 Java 集合类型；`getById` 找不到对象时必须抛出 `UdbxNotFoundError`。所有 Java 枚举参考类型统一放在 `com.supermap.udbx.enums` 包中，禁止使用 Java 保留字 `enum` 作为包名。
 
 ### 基本类型映射表
 
@@ -927,4 +927,4 @@ pub fn open(path: &str) -> Result<UdbxDataSource> {
 - [`01-naming-conventions.md`](./01-naming-conventions.md) — 类名、方法名规范
 - [`02-geometry-model.md`](./02-geometry-model.md) — 几何数据模型
 - [`reference/typescript/udbx4spec.d.ts`](../reference/typescript/udbx4spec.d.ts) — TypeScript 参考定义
-- [`reference/java/`](../reference/java/) — Java 伪接口参考
+- [`reference/java/`](../reference/java/) — 可编译 Java 参考契约

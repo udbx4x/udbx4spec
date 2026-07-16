@@ -11,3 +11,4 @@ import com.supermap.udbx.feature.RegionFeature;
  * @see com.supermap.udbx.feature.MultiPolygonGeometry
  */
 public interface RegionDataset extends VectorDataset<RegionFeature> {
+}

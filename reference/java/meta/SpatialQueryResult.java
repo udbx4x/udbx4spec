@@ -1,7 +1,7 @@
 package com.supermap.udbx.meta;
 
-import com.supermap.udbx.enum.SpatialQueryReason;
-import com.supermap.udbx.enum.SpatialQueryStrategy;
+import com.supermap.udbx.enums.SpatialQueryReason;
+import com.supermap.udbx.enums.SpatialQueryStrategy;
 import com.supermap.udbx.feature.Feature;
 
 import javax.annotation.Nullable;

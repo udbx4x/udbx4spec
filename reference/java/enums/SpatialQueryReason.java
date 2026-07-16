@@ -1,4 +1,4 @@
-package com.supermap.udbx.enum;
+package com.supermap.udbx.enums;
 
 /**
  * 视口空间查询降级原因。

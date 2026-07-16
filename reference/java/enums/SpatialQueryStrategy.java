@@ -1,4 +1,4 @@
-package com.supermap.udbx.enum;
+package com.supermap.udbx.enums;
 
 /**
  * 视口空间查询实际采用的策略。

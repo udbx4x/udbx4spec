@@ -11,3 +11,4 @@ import com.supermap.udbx.feature.LineFeature;
  * @see com.supermap.udbx.feature.MultiLineStringGeometry
  */
 public interface LineDataset extends VectorDataset<LineFeature> {
+}

@@ -1,6 +1,6 @@
 package com.supermap.udbx.meta;
 
-import com.supermap.udbx.enum.DatasetKind;
+import com.supermap.udbx.enums.DatasetKind;
 
 import javax.annotation.Nullable;
 import java.util.List;

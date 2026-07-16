@@ -1,6 +1,6 @@
 package com.supermap.udbx.meta;
 
-import com.supermap.udbx.enum.FieldType;
+import com.supermap.udbx.enums.FieldType;
 
 import javax.annotation.Nullable;
 
@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
  * <p>对应 UDBX SmFieldInfo 表的字段定义。</p>
  *
  * @since udbx4spec 1.0
- * @see com.supermap.udbx.enum.FieldType
+ * @see com.supermap.udbx.enums.FieldType
  */
 public interface FieldInfo {
 
