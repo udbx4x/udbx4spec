@@ -67,6 +67,14 @@ public interface DatasetInfo {
     Integer getGeometryType();
 
     /**
+     * 获取数据集空间范围。
+     *
+     * @return 数据集空间范围，不可用时为 null
+     */
+    @Nullable
+    BoundingBox getExtent();
+
+    /**
      * 获取字段元信息列表。
      *
      * @return 字段列表

@@ -147,6 +147,26 @@ export type FieldType =
   | "text"
   | "time";
 
+export interface BoundingBox {
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+}
+
+export type SpatialQueryStrategy =
+  | "rtree"
+  | "envelope_cache"
+  | "bounded_sample";
+
+export type SpatialQueryReason =
+  | "invalid_viewport"
+  | "spatial_index_unavailable"
+  | "envelope_cache_budget_exceeded"
+  | "query_timeout"
+  | "corrupt_geometry"
+  | "unsupported_dataset_kind";
+
 export interface DatasetInfo {
   readonly id: number;
   readonly name: string;
@@ -155,6 +175,7 @@ export interface DatasetInfo {
   readonly srid: number | null;
   readonly objectCount: number;
   readonly geometryType: number | null;
+  readonly extent?: BoundingBox;
 }
 
 export interface FieldInfo {
@@ -170,6 +191,20 @@ export interface QueryOptions {
   readonly ids?: readonly number[];
   readonly limit?: number;
   readonly offset?: number;
+}
+
+export interface SpatialQueryOptions {
+  readonly bounds: BoundingBox;
+  readonly limit: number;
+  readonly requiredIds?: readonly number[];
+}
+
+export interface SpatialQueryResult<TFeature extends Feature = Feature> {
+  readonly features: readonly TFeature[];
+  readonly queriedBounds: BoundingBox;
+  readonly strategy: SpatialQueryStrategy;
+  readonly hasMore: boolean;
+  readonly degradedReason?: SpatialQueryReason;
 }
 
 // ============================================================================

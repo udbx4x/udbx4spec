@@ -138,6 +138,14 @@ interface Color {
 - `bbox` 来自 Text 数据集的 `SmIndexKey` 对象范围，或由写入实现生成。
 - Text 数据集中的 `SmGeometry` 为 GeoText BLOB，不是 GAIA 几何；`SmIndexKey` 为对象范围 polygon。
 
+### 几何 `bbox` 与查询 `BoundingBox` 的边界
+
+几何交换 `bbox` 保持 GeoJSON-like tuple，即 `[minX, minY, maxX, maxY]`；视口空间查询 `BoundingBox` 使用带 `minX`、`minY`、`maxX`、`maxY` 字段的对象。两者表达相同轴对齐范围，但属于不同公共类型，不得把 `BoundingBox` 对象写入现有几何 Schema，也不得为几何 tuple 赋予空间查询选项语义。
+
+查询 `BoundingBox` 的四个值必须是有限数值，且满足 `minX <= maxX`、`minY <= maxY`。零面积的点范围合法。JSON 文本本身不接受 `NaN` 或无穷值；数值有限性和最小值/最大值排序仍必须由各语言实现做运行时校验。
+
+视口匹配使用对象 MBR 与查询范围相交语义；MBR 边界接触也视为相交。
+
 ## 3. SRID 处理规则
 
 规范强制以下优先级：

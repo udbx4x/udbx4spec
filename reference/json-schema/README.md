@@ -14,6 +14,8 @@ reference/json-schema/
 │   ├── multi-polygon.json
 │   ├── text.json
 │   └── geometry.json       # 所有几何类型的联合
+├── spatial/                # 空间范围 schema
+│   └── bounding-box.json
 ├── feature/                # Feature 类型 schema
 │   ├── feature.json
 │   ├── point-feature.json
@@ -24,10 +26,14 @@ reference/json-schema/
 ├── dataset/                # 数据集元信息 schema
 │   ├── dataset-info.json
 │   ├── field-info.json
-│   └── query-options.json
+│   ├── query-options.json
+│   ├── spatial-query-options.json
+│   └── spatial-query-result.json
 └── enum/                   # 枚举类型 schema
     ├── dataset-kind.json
-    └── field-type.json
+    ├── field-type.json
+    ├── spatial-query-strategy.json
+    └── spatial-query-reason.json
 ```
 
 ## 使用方式
@@ -104,6 +110,7 @@ except ValidationError as e:
 - `geometry/text.json` → `docs/07-geotext-binary-layout.md`
 - `enum/dataset-kind.json` → `docs/03-dataset-taxonomy.md`
 - `enum/field-type.json` → `docs/04-field-taxonomy.md`
+- `spatial/bounding-box.json`、`dataset/spatial-query-*.json` 和 `enum/spatial-query-*.json` → `docs/08-api-stable-surface.md`
 - `dataset/*.json` → `docs/01-naming-conventions.md` (元信息类型命名)
 - `feature/*.json` → `docs/02-geometry-model.md` (Feature 结构)
 

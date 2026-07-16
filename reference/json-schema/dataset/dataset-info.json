@@ -37,6 +37,10 @@
       "type": ["integer", "null"],
       "description": "GAIA geoType integer value - null for tabular datasets"
     },
+    "extent": {
+      "$ref": "../spatial/bounding-box.json",
+      "description": "Optional dataset spatial extent"
+    },
     "fields": {
       "type": "array",
       "items": {

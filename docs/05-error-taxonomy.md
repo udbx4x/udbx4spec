@@ -127,6 +127,19 @@ UdbxError (基类)
 "File is locked by another process"
 ```
 
+## 空间查询结果原因
+
+`SpatialQueryReason` 是 `SpatialQueryResult.degradedReason` 的结果事实，不是异常分类，也不继承 `UdbxError`。它用于说明一次空间查询为何降级，规范值如下：
+
+- `invalid_viewport`
+- `spatial_index_unavailable`
+- `envelope_cache_budget_exceeded`
+- `query_timeout`
+- `corrupt_geometry`
+- `unsupported_dataset_kind`
+
+实现仍应按本章既有错误分类报告无法返回结果的失败；只有已经返回 `SpatialQueryResult` 时，才使用 `degradedReason` 描述该结果的降级事实。
+
 ## 错误处理最佳实践
 
 ### 错误链

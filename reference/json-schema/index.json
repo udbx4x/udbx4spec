@@ -20,14 +20,21 @@
       "textFeature": { "$ref": "./feature/text-feature.json" },
       "tabularRecord": { "$ref": "./feature/tabular-record.json" }
     },
+    "spatial": {
+      "boundingBox": { "$ref": "./spatial/bounding-box.json" }
+    },
     "dataset": {
       "datasetInfo": { "$ref": "./dataset/dataset-info.json" },
       "fieldInfo": { "$ref": "./dataset/field-info.json" },
-      "queryOptions": { "$ref": "./dataset/query-options.json" }
+      "queryOptions": { "$ref": "./dataset/query-options.json" },
+      "spatialQueryOptions": { "$ref": "./dataset/spatial-query-options.json" },
+      "spatialQueryResult": { "$ref": "./dataset/spatial-query-result.json" }
     },
     "enum": {
       "datasetKind": { "$ref": "./enum/dataset-kind.json" },
-      "fieldType": { "$ref": "./enum/field-type.json" }
+      "fieldType": { "$ref": "./enum/field-type.json" },
+      "spatialQueryStrategy": { "$ref": "./enum/spatial-query-strategy.json" },
+      "spatialQueryReason": { "$ref": "./enum/spatial-query-reason.json" }
     }
   },
   "properties": {
@@ -45,11 +52,16 @@
         "./feature/region-feature.json",
         "./feature/text-feature.json",
         "./feature/tabular-record.json",
+        "./spatial/bounding-box.json",
         "./dataset/dataset-info.json",
         "./dataset/field-info.json",
         "./dataset/query-options.json",
+        "./dataset/spatial-query-options.json",
+        "./dataset/spatial-query-result.json",
         "./enum/dataset-kind.json",
-        "./enum/field-type.json"
+        "./enum/field-type.json",
+        "./enum/spatial-query-strategy.json",
+        "./enum/spatial-query-reason.json"
       ],
       "description": "Reference to a specific schema file"
     }
