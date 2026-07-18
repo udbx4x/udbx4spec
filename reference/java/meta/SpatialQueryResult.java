@@ -1,10 +1,8 @@
 package com.supermap.udbx.meta;
 
-import com.supermap.udbx.enums.SpatialQueryReason;
 import com.supermap.udbx.enums.SpatialQueryStrategy;
 import com.supermap.udbx.feature.Feature;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -25,8 +23,4 @@ public interface SpatialQueryResult {
 
     /** @return 是否还存在未返回的视口匹配对象 */
     boolean getHasMore();
-
-    /** @return 降级原因，未降级时为 null */
-    @Nullable
-    SpatialQueryReason getDegradedReason();
 }

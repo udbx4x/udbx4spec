@@ -231,7 +231,6 @@ test("Ajv validates real Point Feature and spatial query positive instances", as
     queriedBounds: zeroAreaBounds,
     strategy: "envelope_cache",
     hasMore: false,
-    degradedReason: "spatial_index_unavailable",
   });
   assertAjvValid(validators.datasetInfo, {
     id: 1,
@@ -257,6 +256,21 @@ test("bounded_sample is a Viewer preview strategy, not an SDK spatial query resu
       hasMore: false,
     },
     "enum",
+  );
+});
+
+test("degradedReason is not part of an SDK spatial query result", async () => {
+  const { validators } = await loadContractValidators();
+  assertAjvInvalid(
+    validators.result,
+    {
+      features: [],
+      queriedBounds: { minX: 0, minY: 0, maxX: 1, maxY: 1 },
+      strategy: "envelope_cache",
+      hasMore: false,
+      degradedReason: "envelope_cache_budget_exceeded",
+    },
+    "additionalProperties",
   );
 });
 
@@ -321,11 +335,6 @@ test("Ajv rejects invalid Point Feature, options, and results", async () => {
     { ...result, strategy: "scan" },
     "enum",
   );
-  assertAjvInvalid(
-    validators.result,
-    { ...result, degradedReason: "unknown" },
-    "enum",
-  );
   const { hasMore, ...missingHasMore } = result;
   assert.equal(hasMore, false);
   assertAjvInvalid(validators.result, missingHasMore, "required");
@@ -386,25 +395,17 @@ test("SpatialQueryOptions schema requires bounds and a positive limit", async ()
   assert.equal(schema.additionalProperties, false);
 });
 
-test("SpatialQueryResult schema requires result facts and keeps degradation optional", async () => {
+test("SpatialQueryResult schema contains only successful result facts", async () => {
   const schema = await readJson("dataset/spatial-query-result.json");
 
   assert.equal(schema.type, "object");
   assert.deepEqual(schema.required, ["features", "queriedBounds", "strategy", "hasMore"]);
-  assertExactKeys(schema.properties, [
-    "features",
-    "queriedBounds",
-    "strategy",
-    "hasMore",
-    "degradedReason",
-  ]);
+  assertExactKeys(schema.properties, ["features", "queriedBounds", "strategy", "hasMore"]);
   assert.equal(schema.properties.features.type, "array");
   assert.deepEqual(schema.properties.features.items, { $ref: "../feature/feature.json" });
   assert.equal(schema.properties.queriedBounds.$ref, "../spatial/bounding-box.json");
   assert.equal(schema.properties.strategy.$ref, "../enum/spatial-query-strategy.json");
   assert.equal(schema.properties.hasMore.type, "boolean");
-  assert.equal(schema.properties.degradedReason.$ref, "../enum/spatial-query-reason.json");
-  assert.equal(schema.required.includes("degradedReason"), false);
   assert.equal(schema.additionalProperties, false);
 });
 
@@ -423,21 +424,30 @@ test("strategy and reason values stay ordered across JSON, TypeScript, and Java"
   assert.match(strategyJava, /public String getValue\(\)/);
 
   assert.deepEqual(reasonSchema.enum, reasonValues);
+  assert.match(reasonSchema.description, /error.*capability diagnostic/i);
+  assert.doesNotMatch(reasonSchema.description, /degrad/i);
   assert.deepEqual(extractTypeScriptUnion(typescript, "SpatialQueryReason"), reasonValues);
   assert.deepEqual(extractJavaEnumValues(reasonJava), reasonValues);
+  assert.match(reasonJava, /错误或 capability 诊断原因/);
+  assert.doesNotMatch(reasonJava, /降级原因/);
   assert.match(reasonJava, /public String getValue\(\)/);
 });
 
 test("TypeScript reference declares the spatial query data contract", async () => {
   const source = await readFile(typescriptPath, "utf8");
+  const spatialQueryResult = source.match(
+    /export interface SpatialQueryResult<TFeature extends Feature = Feature>\s*\{([\s\S]*?)\}/,
+  );
 
   assert.match(source, /export interface BoundingBox\s*\{[\s\S]*?readonly minX: number;[\s\S]*?readonly minY: number;[\s\S]*?readonly maxX: number;[\s\S]*?readonly maxY: number;[\s\S]*?\}/);
   assert.match(source, /export interface SpatialQueryOptions\s*\{[\s\S]*?readonly bounds: BoundingBox;[\s\S]*?readonly limit: number;[\s\S]*?readonly requiredIds\?: readonly number\[\];[\s\S]*?\}/);
-  assert.match(source, /export interface SpatialQueryResult<TFeature extends Feature = Feature>\s*\{[\s\S]*?readonly features: readonly TFeature\[\];[\s\S]*?readonly queriedBounds: BoundingBox;[\s\S]*?readonly strategy: SpatialQueryStrategy;[\s\S]*?readonly hasMore: boolean;[\s\S]*?readonly degradedReason\?: SpatialQueryReason;[\s\S]*?\}/);
+  assert.ok(spatialQueryResult);
+  assert.match(spatialQueryResult[1], /readonly features: readonly TFeature\[\];[\s\S]*?readonly queriedBounds: BoundingBox;[\s\S]*?readonly strategy: SpatialQueryStrategy;[\s\S]*?readonly hasMore: boolean;/);
+  assert.doesNotMatch(spatialQueryResult[1], /degradedReason|SpatialQueryReason/);
   assert.match(source, /export interface DatasetInfo\s*\{[\s\S]*?readonly extent\?: BoundingBox;[\s\S]*?\}/);
 });
 
-test("Java reference uses Feature wildcard lists and nullable degradation", async () => {
+test("Java reference uses Feature wildcard lists and excludes result diagnostics", async () => {
   const [bounds, options, result, datasetInfo] = await Promise.all([
     readFile(path.join(javaDir, "meta", "BoundingBox.java"), "utf8"),
     readFile(path.join(javaDir, "meta", "SpatialQueryOptions.java"), "utf8"),
@@ -453,7 +463,7 @@ test("Java reference uses Feature wildcard lists and nullable degradation", asyn
   assert.match(options, /@Nullable\s+List<Integer> getRequiredIds\(\);/);
   assert.match(result, /import com\.supermap\.udbx\.feature\.Feature;/);
   assert.match(result, /List<\? extends Feature> getFeatures\(\);/);
-  assert.match(result, /@Nullable\s+SpatialQueryReason getDegradedReason\(\);/);
+  assert.doesNotMatch(result, /degradedReason|SpatialQueryReason|Nullable/i);
   assert.match(datasetInfo, /@Nullable\s+BoundingBox getExtent\(\);/);
 });
 
@@ -514,12 +524,15 @@ test("documentation defines viewport query semantics and reference-only status",
   assert.match(contract, /不占用 `limit`/);
   assert.match(contract, /`hasMore`.*只描述视口匹配集合/);
   assert.match(contract, /不返回.*精确命中总数/);
-  assert.match(contract, /`strategy`.*`degradedReason`.*结果事实/);
+  assert.match(contract, /`strategy`.*结果事实/);
+  assert.doesNotMatch(contract, /`degradedReason`/);
   assert.match(contract, /前端.*不可.*猜/);
   assert.match(contract, /缓存预算.*15%.*预取.*并发.*防抖.*不属于格式契约/);
   assert.match(geometryModel, /几何交换 `bbox`.*tuple[\s\S]*查询 `BoundingBox`.*对象/);
-  assert.match(errorTaxonomy, /SpatialQueryReason[\s\S]*不是异常分类/);
+  assert.match(errorTaxonomy, /SpatialQueryReason[\s\S]*错误[\s\S]*capability/);
+  assert.doesNotMatch(errorTaxonomy, /degradedReason/);
   assert.match(languageMapping, /reference-only[\s\S]*Go.*后续/);
+  assert.doesNotMatch(languageMapping, /degradedReason/);
 });
 
 test("JSON Schema README lists the spatial query schema family", async () => {

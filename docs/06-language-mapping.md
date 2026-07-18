@@ -68,7 +68,7 @@ export interface TextGeometry {
 
 ### 视口空间查询类型
 
-TypeScript 使用只读对象和字符串联合类型表达契约：`BoundingBox` 是四字段对象，`SpatialQueryOptions` 包含必填的 `bounds` 与 `limit` 以及可选的 `requiredIds`，`SpatialQueryResult<TFeature>` 返回只读 `features`、`queriedBounds`、`strategy`、`hasMore` 与可选 `degradedReason`。普通 `QueryOptions` 继续只包含 `ids`、`limit`、`offset`。
+TypeScript 使用只读对象和字符串联合类型表达契约：`BoundingBox` 是四字段对象，`SpatialQueryOptions` 包含必填的 `bounds` 与 `limit` 以及可选的 `requiredIds`，`SpatialQueryResult<TFeature>` 返回只读 `features`、`queriedBounds`、`strategy` 与 `hasMore`。`SpatialQueryReason` 用于错误原因和 capability 诊断。普通 `QueryOptions` 继续只包含 `ids`、`limit`、`offset`。
 
 ### 异步迭代器实现
 
@@ -188,7 +188,7 @@ export class BrowserDatasetClient<T> implements DatasetClient<T> {
 
 ### 视口空间查询类型
 
-Java 使用 `BoundingBox`、`SpatialQueryOptions` 和 `SpatialQueryResult` 接口。结果中的要素集合映射为 `List<? extends Feature>`，可选降级原因使用 `@Nullable SpatialQueryReason`；`SpatialQueryStrategy` 与 `SpatialQueryReason` 通过 `getValue()` 暴露规范字符串值。普通 `QueryOptions` 不承担空间查询语义。
+Java 使用 `BoundingBox`、`SpatialQueryOptions` 和 `SpatialQueryResult` 接口。结果中的要素集合映射为 `List<? extends Feature>`；`SpatialQueryStrategy` 与用于错误原因和 capability 诊断的 `SpatialQueryReason` 通过 `getValue()` 暴露规范字符串值。普通 `QueryOptions` 不承担空间查询语义。
 
 ### 抽象类 vs 接口
 

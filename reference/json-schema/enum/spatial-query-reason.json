@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/udbx4x/udbx4spec/schemas/enum/spatial-query-reason.json",
   "title": "SpatialQueryReason",
-  "description": "Reason for degraded viewport spatial query behavior",
+  "description": "Reason for viewport spatial query errors or capability diagnostics",
   "type": "string",
   "enum": [
     "invalid_viewport",

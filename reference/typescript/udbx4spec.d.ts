@@ -206,7 +206,6 @@ export interface SpatialQueryResult<TFeature extends Feature = Feature> {
   readonly queriedBounds: BoundingBox;
   readonly strategy: SpatialQueryStrategy;
   readonly hasMore: boolean;
-  readonly degradedReason?: SpatialQueryReason;
 }
 
 // ============================================================================

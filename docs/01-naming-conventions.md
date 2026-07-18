@@ -99,7 +99,7 @@
 | `QueryOptions` | 普通查询/分页选项 | `ids?`, `limit?`, `offset?` |
 | `BoundingBox` | 视口或数据集空间范围 | `minX`, `minY`, `maxX`, `maxY` |
 | `SpatialQueryOptions` | 视口空间查询选项 | `bounds`, `limit`, `requiredIds?`；不包含 `offset` |
-| `SpatialQueryResult` | 视口空间查询结果 | `features`, `queriedBounds`, `strategy`, `hasMore`, `degradedReason?` |
+| `SpatialQueryResult` | 视口空间查询结果 | `features`, `queriedBounds`, `strategy`, `hasMore` |
 
 ### DatasetInfo 属性名规范
 
@@ -169,9 +169,8 @@
 - `SpatialQueryStrategy` 的规范字符串值依次且仅为 `rtree`、`envelope_cache`。
 - `SpatialQueryReason` 的规范字符串值依次为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
 - Java 枚举常量采用大写下划线命名，并通过 `getValue()` 返回对应规范字符串。
-- `QuerySpatial` 成功结果中的普通 `features` 必须与 `bounds` MBR 相交；只有通过 `requiredIds` 补入的对象可以位于视口外。
-- envelope cache 预算不足时，SDK 查询以 `envelope_cache_budget_exceeded` 错误结束，不返回成功结果。
 - `bounded_sample` 等非空间采样仅属于 Viewer 工具层预览策略，不是 SDK 策略，也不得进入 SDK 空间查询成功结果。
+- 空间查询成功结果的行为规则见 [稳定 API 表面](./08-api-stable-surface.md#视口空间查询契约)，错误与 capability 诊断规则见 [错误分类](./05-error-taxonomy.md#空间查询错误与诊断原因)。
 
 ## 7. 错误/异常命名
 

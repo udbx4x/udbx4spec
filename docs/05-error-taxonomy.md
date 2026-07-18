@@ -127,9 +127,9 @@ UdbxError (基类)
 "File is locked by another process"
 ```
 
-## 空间查询结果原因
+## 空间查询错误与诊断原因
 
-`SpatialQueryReason` 是空间查询使用的规范原因值，不是异常分类，也不继承 `UdbxError`。除下述预算不足的终止场景外，它可作为 `SpatialQueryResult.degradedReason` 说明一次成功查询为何降级。规范值如下：
+`SpatialQueryReason` 是 SDK `QuerySpatial` 错误和 capability 诊断使用的规范原因码，不是异常分类，也不继承 `UdbxError`。它不属于成功 `SpatialQueryResult` 的字段。规范值如下：
 
 - `invalid_viewport`
 - `spatial_index_unavailable`
@@ -138,9 +138,9 @@ UdbxError (基类)
 - `corrupt_geometry`
 - `unsupported_dataset_kind`
 
-实现仍应按本章既有错误分类报告无法返回结果的失败；只有已经返回 `SpatialQueryResult` 时，才使用 `degradedReason` 描述该结果的降级事实。
+实现应按本章既有错误分类报告无法返回结果的失败，并将适用的 `SpatialQueryReason` 绑定为错误原因码。Capability 探测可以使用同一组原因码说明空间索引、数据集类型等运行时能力，但不得把诊断信息写入成功 `SpatialQueryResult`。
 
-当 RTree 不可用且 envelope cache 无法在预算内完成时，SDK 必须终止空间查询，并以 `envelope_cache_budget_exceeded` 作为错误原因；不得返回包含非空间采样对象的成功 `SpatialQueryResult`，也不得把该预算错误写入成功结果的 `degradedReason`。Viewer 可以在工具层另行采用 `bounded_sample` 等预览策略，但该行为不属于 SDK 空间查询成功契约。
+当 RTree 不可用且 envelope cache 无法在预算内完成时，SDK 必须终止空间查询，并以 `envelope_cache_budget_exceeded` 作为错误原因；不得返回包含非空间采样对象的成功 `SpatialQueryResult`。Viewer 工具层的预览诊断不属于 SDK 空间查询结果契约。
 
 ## 错误处理最佳实践
 

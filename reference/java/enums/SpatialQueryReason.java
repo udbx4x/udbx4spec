@@ -1,7 +1,7 @@
 package com.supermap.udbx.enums;
 
 /**
- * 视口空间查询降级原因。
+ * 视口空间查询错误或 capability 诊断原因。
  *
  * @since udbx4spec 1.1
  */

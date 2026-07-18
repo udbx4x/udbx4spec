@@ -24,10 +24,6 @@
     "hasMore": {
       "type": "boolean",
       "description": "Whether additional viewport matches exist"
-    },
-    "degradedReason": {
-      "$ref": "../enum/spatial-query-reason.json",
-      "description": "Reason the query used degraded behavior"
     }
   },
   "additionalProperties": false

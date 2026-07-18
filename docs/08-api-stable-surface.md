@@ -27,7 +27,7 @@
 | 查询选项 | `QueryOptions` | `ids`、`limit`、`offset` |
 | 空间范围 | `BoundingBox` | `minX`、`minY`、`maxX`、`maxY` |
 | 视口空间查询选项 | `SpatialQueryOptions` | `bounds`、`limit`、`requiredIds?` |
-| 视口空间查询结果 | `SpatialQueryResult` | 要素、实际范围、策略、更多结果标志与可选降级原因 |
+| 视口空间查询结果 | `SpatialQueryResult` | 要素、实际范围、策略与更多结果标志 |
 
 ## DataSource 稳定面
 
@@ -91,12 +91,12 @@
 - `hasMore` 只描述视口匹配集合是否还有对象，不受 `requiredIds` 命中、缺失或数量影响。
 - `offset` 不进入 `SpatialQueryOptions`。普通 `QueryOptions` 保留 `ids`、`limit`、`offset`，不得增加同名但不同语义的空间范围字段。
 - 结果不返回视口精确命中总数，调用方不得从 `features.length` 推断总数。
-- `strategy` 和 `degradedReason` 是结果事实，前端不可根据索引、耗时或结果数量自行猜测。
+- `strategy` 是成功结果事实，前端不可根据索引、耗时或结果数量自行猜测。
 - envelope cache 无法在预算内完成时，SDK 查询必须以 `envelope_cache_budget_exceeded` 错误结束，不得返回非空间采样成功结果。
 - 缓存预算的具体额度、15% 预取、并发控制与防抖参数不属于格式契约，由各 SDK 或工具运行时自行决定。
 - `bounded_sample` 等非空间采样只属于 Viewer 工具层预览策略，不属于 SDK `QuerySpatial` 成功结果。
 
-`SpatialQueryStrategy` 的有序规范值仅为 `rtree`、`envelope_cache`。`SpatialQueryReason` 的有序规范值为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
+`SpatialQueryStrategy` 的有序规范值仅为 `rtree`、`envelope_cache`。`SpatialQueryReason` 只用于失败原因和 capability 诊断，不进入成功结果；其有序规范值为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
 
 本阶段只固定 JSON Schema、TypeScript 与 Java reference，不表示 Java 或 TypeScript SDK 已实现；Go 类型与运行时能力在后续任务实现。
 
