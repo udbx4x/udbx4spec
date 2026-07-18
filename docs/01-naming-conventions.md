@@ -166,9 +166,12 @@
 
 ### 空间查询枚举
 
-- `SpatialQueryStrategy` 的规范字符串值依次为 `rtree`、`envelope_cache`、`bounded_sample`。
+- `SpatialQueryStrategy` 的规范字符串值依次且仅为 `rtree`、`envelope_cache`。
 - `SpatialQueryReason` 的规范字符串值依次为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
 - Java 枚举常量采用大写下划线命名，并通过 `getValue()` 返回对应规范字符串。
+- `QuerySpatial` 成功结果中的普通 `features` 必须与 `bounds` MBR 相交；只有通过 `requiredIds` 补入的对象可以位于视口外。
+- envelope cache 预算不足时，SDK 查询以 `envelope_cache_budget_exceeded` 错误结束，不返回成功结果。
+- `bounded_sample` 等非空间采样仅属于 Viewer 工具层预览策略，不是 SDK 策略，也不得进入 SDK 空间查询成功结果。
 
 ## 7. 错误/异常命名
 

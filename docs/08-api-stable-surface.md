@@ -86,14 +86,17 @@
 - 视口匹配采用 MBR 相交，MBR 边界接触也视为相交。
 - 实现读取 `limit + 1` 个视口匹配对象；前 `limit` 个进入普通结果，第 `limit + 1` 条仅用于计算 `hasMore`，不得进入 `features`。
 - `features` 是前 `limit` 个视口 MBR 匹配对象与 `requiredIds` 对象的去重并集。
+- 普通 `features` 必须全部与 `bounds` MBR 相交；只有通过 `requiredIds` 补入的对象可以位于视口外。
 - `requiredIds` 必须是唯一正整数，命中的对象追加在普通结果之后，不占用 `limit`；与普通结果重复的对象只保留一次。
 - `hasMore` 只描述视口匹配集合是否还有对象，不受 `requiredIds` 命中、缺失或数量影响。
 - `offset` 不进入 `SpatialQueryOptions`。普通 `QueryOptions` 保留 `ids`、`limit`、`offset`，不得增加同名但不同语义的空间范围字段。
 - 结果不返回视口精确命中总数，调用方不得从 `features.length` 推断总数。
 - `strategy` 和 `degradedReason` 是结果事实，前端不可根据索引、耗时或结果数量自行猜测。
-- 缓存预算、15% 预取、并发控制与防抖参数不属于格式契约，由各 SDK 或工具运行时自行决定。
+- envelope cache 无法在预算内完成时，SDK 查询必须以 `envelope_cache_budget_exceeded` 错误结束，不得返回非空间采样成功结果。
+- 缓存预算的具体额度、15% 预取、并发控制与防抖参数不属于格式契约，由各 SDK 或工具运行时自行决定。
+- `bounded_sample` 等非空间采样只属于 Viewer 工具层预览策略，不属于 SDK `QuerySpatial` 成功结果。
 
-`SpatialQueryStrategy` 的有序规范值为 `rtree`、`envelope_cache`、`bounded_sample`。`SpatialQueryReason` 的有序规范值为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
+`SpatialQueryStrategy` 的有序规范值仅为 `rtree`、`envelope_cache`。`SpatialQueryReason` 的有序规范值为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
 
 本阶段只固定 JSON Schema、TypeScript 与 Java reference，不表示 Java 或 TypeScript SDK 已实现；Go 类型与运行时能力在后续任务实现。
 

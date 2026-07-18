@@ -6,7 +6,6 @@
   "type": "string",
   "enum": [
     "rtree",
-    "envelope_cache",
-    "bounded_sample"
+    "envelope_cache"
   ]
 }

@@ -24,7 +24,7 @@ const contractSchemaIds = {
 };
 let contractValidatorsPromise;
 
-const strategyValues = ["rtree", "envelope_cache", "bounded_sample"];
+const strategyValues = ["rtree", "envelope_cache"];
 const reasonValues = [
   "invalid_viewport",
   "spatial_index_unavailable",
@@ -244,6 +244,20 @@ test("Ajv validates real Point Feature and spatial query positive instances", as
     extent: zeroAreaBounds,
     fields: [],
   });
+});
+
+test("bounded_sample is a Viewer preview strategy, not an SDK spatial query result", async () => {
+  const { validators } = await loadContractValidators();
+  assertAjvInvalid(
+    validators.result,
+    {
+      features: [],
+      queriedBounds: { minX: 0, minY: 0, maxX: 1, maxY: 1 },
+      strategy: "bounded_sample",
+      hasMore: false,
+    },
+    "enum",
+  );
 });
 
 test("Ajv rejects invalid Point Feature, options, and results", async () => {

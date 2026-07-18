@@ -8,8 +8,7 @@ package com.supermap.udbx.enums;
 public enum SpatialQueryStrategy {
 
     RTREE("rtree"),
-    ENVELOPE_CACHE("envelope_cache"),
-    BOUNDED_SAMPLE("bounded_sample");
+    ENVELOPE_CACHE("envelope_cache");
 
     private final String value;
 

@@ -159,8 +159,7 @@ export interface BoundingBox {
 
 export type SpatialQueryStrategy =
   | "rtree"
-  | "envelope_cache"
-  | "bounded_sample";
+  | "envelope_cache";
 
 export type SpatialQueryReason =
   | "invalid_viewport"
