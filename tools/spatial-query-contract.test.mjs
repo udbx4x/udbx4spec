@@ -60,7 +60,7 @@ async function listFiles(root, extension) {
 async function loadContractValidators() {
   if (!contractValidatorsPromise) {
     contractValidatorsPromise = (async () => {
-      const ajv = new Ajv2020({ allErrors: true, strict: false });
+      const ajv = new Ajv2020({ allErrors: true, strict: false, strictNumbers: true });
       const schemaFiles = await listFiles(schemaDir, ".json");
       const schemas = await Promise.all(
         schemaFiles.map(async (schemaFile) => {
@@ -350,6 +350,18 @@ test("Ajv rejects invalid Point Feature, options, and results", async () => {
   );
 });
 
+test("Ajv rejects non-finite bounding box coordinates in runtime objects", async () => {
+  const { validators } = await loadContractValidators();
+
+  for (const coordinate of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
+    assertAjvInvalid(
+      validators.boundingBox,
+      { minX: coordinate, minY: 0, maxX: 1, maxY: 1 },
+      "type",
+    );
+  }
+});
+
 test("BoundingBox ordering and non-JSON numbers remain runtime concerns", async () => {
   const { validators } = await loadContractValidators();
   const reversedBounds = { minX: 5, minY: 0, maxX: 4, maxY: 10 };
@@ -447,6 +459,19 @@ test("TypeScript reference declares the spatial query data contract", async () =
   assert.match(source, /export interface DatasetInfo\s*\{[\s\S]*?readonly extent\?: BoundingBox;[\s\S]*?\}/);
 });
 
+test("TypeScript DataSource exposes the spatial query operation", async () => {
+  const source = await readFile(typescriptPath, "utf8");
+  const dataSource = source.match(
+    /export interface UdbxDataSourceContract\s*\{([\s\S]*?)\n\}/,
+  );
+
+  assert.ok(dataSource);
+  assert.match(
+    dataSource[1],
+    /querySpatial\(\s*datasetName: string,\s*options: SpatialQueryOptions\s*\): Promise<SpatialQueryResult>;/,
+  );
+});
+
 test("Java reference uses Feature wildcard lists and excludes result diagnostics", async () => {
   const [bounds, options, result, datasetInfo] = await Promise.all([
     readFile(path.join(javaDir, "meta", "BoundingBox.java"), "utf8"),
@@ -465,6 +490,17 @@ test("Java reference uses Feature wildcard lists and excludes result diagnostics
   assert.match(result, /List<\? extends Feature> getFeatures\(\);/);
   assert.doesNotMatch(result, /degradedReason|SpatialQueryReason|Nullable/i);
   assert.match(datasetInfo, /@Nullable\s+BoundingBox getExtent\(\);/);
+});
+
+test("Java DataSource exposes the spatial query operation", async () => {
+  const source = await readFile(path.join(javaDir, "UdbxDataSource.java"), "utf8");
+
+  assert.match(source, /import com\.supermap\.udbx\.meta\.SpatialQueryOptions;/);
+  assert.match(source, /import com\.supermap\.udbx\.meta\.SpatialQueryResult;/);
+  assert.match(
+    source,
+    /SpatialQueryResult querySpatial\(String datasetName, SpatialQueryOptions options\) throws UdbxError;/,
+  );
 });
 
 test("DatasetInfo and schema index expose every new schema", async () => {

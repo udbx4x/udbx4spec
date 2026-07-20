@@ -298,6 +298,10 @@ export interface TabularDatasetWritable extends TabularDatasetReadable {
 export interface UdbxDataSourceContract {
   listDatasets(): Promise<readonly DatasetInfo[]>;
   getDataset(name: string): Promise<Dataset>;
+  querySpatial(
+    datasetName: string,
+    options: SpatialQueryOptions
+  ): Promise<SpatialQueryResult>;
   createPointDataset(
     name: string,
     srid: number,

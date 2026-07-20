@@ -38,6 +38,7 @@
 | 关闭数据源 | `close` | `close` | `Close` | 释放连接资源；重复关闭不得破坏数据 |
 | 列出数据集 | `listDatasets` | `listDatasets` | `ListDatasets` | 返回 `DatasetInfo` 列表，至少包含可识别数据集 |
 | 按名称获取数据集 | `getDataset` | `getDataset` | `GetDataset` | 不存在时返回 not found |
+| 视口空间查询 | `querySpatial` | `querySpatial` | `QuerySpatial` | 按数据集名称和视口 MBR 查询，成功结果只使用真实空间策略 |
 
 ## Dataset 稳定面
 
@@ -79,7 +80,7 @@
 
 ## 视口空间查询契约
 
-`SpatialQueryOptions` 专用于按视口 MBR 读取空间对象。`bounds` 是 `BoundingBox` 对象，四个值必须有限并满足 `minX <= maxX`、`minY <= maxY`；零面积点范围合法。JSON 本身不接受 `NaN` 或无穷值，排序和有限性由实现运行时校验。
+`DataSource.querySpatial(datasetName, options)` / `QuerySpatial(datasetName, options)` 是统一入口。`SpatialQueryOptions` 专用于按视口 MBR 读取空间对象。`bounds` 是 `BoundingBox` 对象，四个值必须有限并满足 `minX <= maxX`、`minY <= maxY`；零面积点范围合法。JSON 本身不接受 `NaN` 或无穷值；直接校验运行时对象的实现也必须拒绝非有限数值，坐标顺序由实现运行时校验。
 
 统一规则：
 

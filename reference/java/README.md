@@ -135,6 +135,7 @@ Stream<PointFeature> stream() throws UdbxError;
 | `update(id, changes)` | `T update(int id, FeatureChanges changes)` |
 | `delete(id)` | `boolean delete(int id)` |
 | `count()` | `int count()`；读取物理表真实行数 |
+| `querySpatial(datasetName, options)` | `SpatialQueryResult querySpatial(String datasetName, SpatialQueryOptions options)`；定义在 `UdbxDataSource` |
 | `id` | `int getId()` |
 | `geometry` | `TGeometry getGeometry()` |
 | `attributes` | `Map<String, Object> getAttributes()` |
@@ -146,6 +147,7 @@ Java 参考契约必须与 `docs/08-api-stable-surface.md` 保持一致：
 - `getById(id)` 找不到对象时抛出 `UdbxNotFoundError`，不得返回 `null`。
 - `list(options)` 默认按 `SmID` 升序返回；`ids` 过滤不改变排序语义。
 - `count()` 读取物理表真实行数，不以 `DatasetInfo.getObjectCount()` 或 `SmRegister.SmObjectCount` 缓存为准。
+- `UdbxDataSource.querySpatial(datasetName, options)` 是视口空间查询入口，成功结果只允许 `rtree` 或 `envelope_cache`。
 - `update(id, ...)` 和 `delete(id)` 的目标对象不存在时抛出 `UdbxNotFoundError`。
 
 ## 相关文档

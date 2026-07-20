@@ -308,6 +308,10 @@ try (UdbxDataSource ds = UdbxDataSource.open("/path/to/data.udbx")) {
 } // 自动关闭
 ```
 
+视口空间查询统一定义在数据源入口：Java、TypeScript 使用
+`querySpatial(datasetName, options)`，Go 使用 `QuerySpatial(datasetName, options)`。
+查询成功结果只允许 `rtree` 或 `envelope_cache`；错误原因通过各语言惯用的错误通道表达。
+
 ---
 
 ## Python
