@@ -36,14 +36,6 @@ public interface QueryOptions {
     Integer getOffset();
 
     /**
-     * 获取空间过滤边界框。
-     *
-     * @return 边界框 [minX, minY, maxX, maxY]，null 表示不过滤（未来扩展）
-     */
-    @Nullable
-    double[] getBbox();
-
-    /**
      * 创建空查询选项（返回所有）。
      *
      * @return 空 QueryOptions 实例

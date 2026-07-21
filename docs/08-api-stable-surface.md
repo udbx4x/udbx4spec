@@ -25,6 +25,9 @@
 | 要素 | `Feature` | 空间对象，包含 `id`、`geometry`、`attributes` |
 | 属性记录 | `TabularRecord` | 非空间记录，包含 `id`、`attributes` |
 | 查询选项 | `QueryOptions` | `ids`、`limit`、`offset` |
+| 空间范围 | `BoundingBox` | `minX`、`minY`、`maxX`、`maxY` |
+| 视口空间查询选项 | `SpatialQueryOptions` | `bounds`、`limit`、`requiredIds?` |
+| 视口空间查询结果 | `SpatialQueryResult` | 要素、实际范围、策略与更多结果标志 |
 
 ## DataSource 稳定面
 
@@ -35,6 +38,7 @@
 | 关闭数据源 | `close` | `close` | `Close` | 释放连接资源；重复关闭不得破坏数据 |
 | 列出数据集 | `listDatasets` | `listDatasets` | `ListDatasets` | 返回 `DatasetInfo` 列表，至少包含可识别数据集 |
 | 按名称获取数据集 | `getDataset` | `getDataset` | `GetDataset` | 不存在时返回 not found |
+| 视口空间查询 | `querySpatial` | `querySpatial` | `QuerySpatial` | 按数据集名称和视口 MBR 查询，成功结果只使用真实空间策略 |
 
 ## Dataset 稳定面
 
@@ -73,6 +77,29 @@
 - `limit` 限制返回数量。
 - `offset` 表示跳过升序结果中的前 N 条。
 - 空结果返回空集合，不返回 not found。
+
+## 视口空间查询契约
+
+`DataSource.querySpatial(datasetName, options)` / `QuerySpatial(datasetName, options)` 是统一入口。`SpatialQueryOptions` 专用于按视口 MBR 读取空间对象。`bounds` 是 `BoundingBox` 对象，四个值必须有限并满足 `minX <= maxX`、`minY <= maxY`；零面积点范围合法。JSON 本身不接受 `NaN` 或无穷值；直接校验运行时对象的实现也必须拒绝非有限数值，坐标顺序由实现运行时校验。
+
+统一规则：
+
+- 视口匹配采用 MBR 相交，MBR 边界接触也视为相交。
+- 实现读取 `limit + 1` 个视口匹配对象；前 `limit` 个进入普通结果，第 `limit + 1` 条仅用于计算 `hasMore`，不得进入 `features`。
+- `features` 是前 `limit` 个视口 MBR 匹配对象与 `requiredIds` 对象的去重并集。
+- 普通 `features` 必须全部与 `bounds` MBR 相交；只有通过 `requiredIds` 补入的对象可以位于视口外。
+- `requiredIds` 必须是唯一正整数，命中的对象追加在普通结果之后，不占用 `limit`；与普通结果重复的对象只保留一次。
+- `hasMore` 只描述视口匹配集合是否还有对象，不受 `requiredIds` 命中、缺失或数量影响。
+- `offset` 不进入 `SpatialQueryOptions`。普通 `QueryOptions` 保留 `ids`、`limit`、`offset`，不得增加同名但不同语义的空间范围字段。
+- 结果不返回视口精确命中总数，调用方不得从 `features.length` 推断总数。
+- `strategy` 是成功结果事实，前端不可根据索引、耗时或结果数量自行猜测。
+- envelope cache 无法在预算内完成时，SDK 查询必须以 `envelope_cache_budget_exceeded` 错误结束，不得返回非空间采样成功结果。
+- 缓存预算的具体额度、15% 预取、并发控制与防抖参数不属于格式契约，由各 SDK 或工具运行时自行决定。
+- `bounded_sample` 等非空间采样只属于 Viewer 工具层预览策略，不属于 SDK `QuerySpatial` 成功结果。
+
+`SpatialQueryStrategy` 的有序规范值仅为 `rtree`、`envelope_cache`。`SpatialQueryReason` 只用于失败原因和 capability 诊断，不进入成功结果；其有序规范值为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
+
+本阶段只固定 JSON Schema、TypeScript 与 Java reference，不表示 Java 或 TypeScript SDK 已实现；Go 类型与运行时能力在后续任务实现。
 
 ## `count` 语义
 

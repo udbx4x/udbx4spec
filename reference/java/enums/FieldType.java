@@ -1,4 +1,4 @@
-package com.supermap.udbx.enum;
+package com.supermap.udbx.enums;
 
 import com.supermap.udbx.exception.UdbxUnsupportedError;
 
@@ -92,12 +92,28 @@ public enum FieldType {
      * @return SQLite 类型字符串
      */
     public String getSqliteType() {
-        return switch (this) {
-            case BOOLEAN, BYTE, INT16, INT32, INT64 -> "INTEGER";
-            case SINGLE, DOUBLE -> "REAL";
-            case BINARY, GEOMETRY -> "BLOB";
-            case DATE, CHAR, NTEXT, TEXT, TIME -> "TEXT";
-        };
+        switch (this) {
+            case BOOLEAN:
+            case BYTE:
+            case INT16:
+            case INT32:
+            case INT64:
+                return "INTEGER";
+            case SINGLE:
+            case DOUBLE:
+                return "REAL";
+            case BINARY:
+            case GEOMETRY:
+                return "BLOB";
+            case DATE:
+            case CHAR:
+            case NTEXT:
+            case TEXT:
+            case TIME:
+                return "TEXT";
+            default:
+                throw new IllegalStateException("Unhandled field type: " + this);
+        }
     }
 
     /**
@@ -106,10 +122,17 @@ public enum FieldType {
      * @return true 如果是数值类型
      */
     public boolean isNumeric() {
-        return switch (this) {
-            case BYTE, INT16, INT32, INT64, SINGLE, DOUBLE -> true;
-            default -> false;
-        };
+        switch (this) {
+            case BYTE:
+            case INT16:
+            case INT32:
+            case INT64:
+            case SINGLE:
+            case DOUBLE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -118,9 +141,13 @@ public enum FieldType {
      * @return true 如果是文本类型
      */
     public boolean isText() {
-        return switch (this) {
-            case CHAR, NTEXT, TEXT -> true;
-            default -> false;
-        };
+        switch (this) {
+            case CHAR:
+            case NTEXT:
+            case TEXT:
+                return true;
+            default:
+                return false;
+        }
     }
 }

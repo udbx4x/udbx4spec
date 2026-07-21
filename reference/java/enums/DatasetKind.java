@@ -1,4 +1,4 @@
-package com.supermap.udbx.enum;
+package com.supermap.udbx.enums;
 
 import com.supermap.udbx.exception.UdbxUnsupportedError;
 

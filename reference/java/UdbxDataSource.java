@@ -4,6 +4,8 @@ import com.supermap.udbx.dataset.Dataset;
 import com.supermap.udbx.dataset.TextDataset;
 import com.supermap.udbx.meta.DatasetInfo;
 import com.supermap.udbx.meta.FieldInfo;
+import com.supermap.udbx.meta.SpatialQueryOptions;
+import com.supermap.udbx.meta.SpatialQueryResult;
 import com.supermap.udbx.exception.UdbxError;
 
 import java.util.List;
@@ -60,6 +62,16 @@ public interface UdbxDataSource extends AutoCloseable {
      * @throws UdbxError 查询失败时抛出
      */
     List<DatasetInfo> listDatasets() throws UdbxError;
+
+    /**
+     * 按视口 MBR 查询空间数据集。
+     *
+     * @param datasetName 数据集名称
+     * @param options 空间查询选项
+     * @return 空间查询结果
+     * @throws UdbxError 查询失败时抛出
+     */
+    SpatialQueryResult querySpatial(String datasetName, SpatialQueryOptions options) throws UdbxError;
 
     /**
      * 创建文本数据集。

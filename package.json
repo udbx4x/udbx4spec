@@ -1,0 +1,11 @@
+{
+  "name": "udbx4spec-contract-tools",
+  "private": true,
+  "scripts": {
+    "test:spatial-query-contract": "node --test tools/spatial-query-contract.test.mjs"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "typescript": "5.9.3"
+  }
+}

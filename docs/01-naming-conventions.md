@@ -94,9 +94,12 @@
 
 | 规范名 | 用途 | 关键属性 |
 |--------|------|----------|
-| `DatasetInfo` | 数据集元信息 | `id`, `name`, `tableName`, `kind`, `srid`, `objectCount`, `geometryType` |
+| `DatasetInfo` | 数据集元信息 | `id`, `name`, `tableName`, `kind`, `srid`, `objectCount`, `geometryType`, `extent?` |
 | `FieldInfo` | 字段元信息 | `name`, `fieldType`, `alias?`, `required?`, `nullable?`, `defaultValue?` |
-| `QueryOptions` | 查询/分页选项 | `ids?`, `limit?`, `offset?`（未来可扩展 `bbox?`） |
+| `QueryOptions` | 普通查询/分页选项 | `ids?`, `limit?`, `offset?` |
+| `BoundingBox` | 视口或数据集空间范围 | `minX`, `minY`, `maxX`, `maxY` |
+| `SpatialQueryOptions` | 视口空间查询选项 | `bounds`, `limit`, `requiredIds?`；不包含 `offset` |
+| `SpatialQueryResult` | 视口空间查询结果 | `features`, `queriedBounds`, `strategy`, `hasMore` |
 
 ### DatasetInfo 属性名规范
 
@@ -109,6 +112,7 @@
 | `srid` | `number \| null` / `int` | 坐标系 ID |
 | `objectCount` | `number` / `int` | 对象数量 |
 | `geometryType` | `number \| null` / `int` | GAIA geoType 整数值（如 1, 5, 6, 1001 等） |
+| `extent` | `BoundingBox?` | 数据集空间范围（可选） |
 
 ### FieldInfo 属性名规范
 
@@ -137,7 +141,7 @@
 - `text`
 - `cad`
 
-**Java v2.0.0 映射**：`DatasetType` 重命名为 `DatasetKind`，枚举常量使用大写下划线（如 `DatasetKind.POINT`、`DatasetKind.POINT_Z`）。
+**Java v2.0.0 映射**：`DatasetType` 重命名为 `DatasetKind`，放在 `com.supermap.udbx.enums` 包中；枚举常量使用大写下划线（如 `DatasetKind.POINT`、`DatasetKind.POINT_Z`）。
 
 ### FieldType
 
@@ -158,7 +162,15 @@
 - `text`
 - `time`
 
-**Java v2.0.0 映射**：`FieldType.BOOLEAN`、`FieldType.INT16` 等。
+**Java v2.0.0 映射**：`FieldType` 放在 `com.supermap.udbx.enums` 包中，常量使用 `FieldType.BOOLEAN`、`FieldType.INT16` 等。
+
+### 空间查询枚举
+
+- `SpatialQueryStrategy` 的规范字符串值依次且仅为 `rtree`、`envelope_cache`。
+- `SpatialQueryReason` 的规范字符串值依次为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
+- Java 枚举常量采用大写下划线命名，并通过 `getValue()` 返回对应规范字符串。
+- `bounded_sample` 等非空间采样仅属于 Viewer 工具层预览策略，不是 SDK 策略，也不得进入 SDK 空间查询成功结果。
+- 空间查询成功结果的行为规则见 [稳定 API 表面](./08-api-stable-surface.md#视口空间查询契约)，错误与 capability 诊断规则见 [错误分类](./05-error-taxonomy.md#空间查询错误与诊断原因)。
 
 ## 7. 错误/异常命名
 

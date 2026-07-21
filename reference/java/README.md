@@ -1,6 +1,6 @@
-# UDBX Java 伪接口参考
+# UDBX Java 参考契约
 
-本目录包含 UDBX 规范的 Java 伪接口（pseudo-interface）参考实现，为 Java 开发者提供规范映射指导。
+本目录包含 UDBX 规范的可编译 Java 参考契约，为 Java 开发者提供规范映射指导。
 
 ## 目录结构
 
@@ -16,15 +16,20 @@ reference/java/
 │   ├── UdbxUnsupportedError.java
 │   ├── UdbxConstraintError.java
 │   └── UdbxIOError.java
-├── enum/                            # 枚举类型
+├── enums/                           # 枚举类型（com.supermap.udbx.enums）
 │   ├── package-info.java
 │   ├── DatasetKind.java
-│   └── FieldType.java
+│   ├── FieldType.java
+│   ├── SpatialQueryStrategy.java
+│   └── SpatialQueryReason.java
 ├── meta/                            # 元信息类型
 │   ├── package-info.java
+│   ├── BoundingBox.java
 │   ├── DatasetInfo.java
 │   ├── FieldInfo.java
-│   └── QueryOptions.java
+│   ├── QueryOptions.java
+│   ├── SpatialQueryOptions.java
+│   └── SpatialQueryResult.java
 ├── feature/                         # Feature 类型
 │   ├── package-info.java
 │   ├── Geometry.java               # 基类
@@ -65,14 +70,15 @@ reference/java/
 
 ## 使用说明
 
-### 这不是可运行的代码
+### 这是可编译的参考契约
 
-这些 `.java` 文件是**伪接口**，用于展示 udbx4spec 在 Java 中的规范映射。它们：
+这些 `.java` 文件用于展示 udbx4spec 在 Java 中的规范映射。它们：
 
+- 必须能由 Java 11 编译器整体编译
 - 展示正确的类名、方法名和属性名
 - 展示泛型使用模式
 - 展示 Javadoc 注释风格
-- **不包含实际实现**（方法体抛出 `UnsupportedOperationException`）
+- **不包含 SDK 运行时实现**（静态工厂方法仅声明参考行为）
 
 ### 实际实现参考
 
@@ -88,6 +94,9 @@ reference/java/
 ### 2. 泛型设计
 
 ```java
+import com.supermap.udbx.enums.DatasetKind;
+import com.supermap.udbx.enums.FieldType;
+
 // Feature 使用泛型参数表示几何类型
 public interface Feature<TGeometry extends Geometry> { ... }
 
@@ -126,17 +135,19 @@ Stream<PointFeature> stream() throws UdbxError;
 | `update(id, changes)` | `T update(int id, FeatureChanges changes)` |
 | `delete(id)` | `boolean delete(int id)` |
 | `count()` | `int count()`；读取物理表真实行数 |
+| `querySpatial(datasetName, options)` | `SpatialQueryResult querySpatial(String datasetName, SpatialQueryOptions options)`；定义在 `UdbxDataSource` |
 | `id` | `int getId()` |
 | `geometry` | `TGeometry getGeometry()` |
 | `attributes` | `Map<String, Object> getAttributes()` |
 
 ### 5. 稳定面约束
 
-Java 伪接口必须与 `docs/08-api-stable-surface.md` 保持一致：
+Java 参考契约必须与 `docs/08-api-stable-surface.md` 保持一致：
 
 - `getById(id)` 找不到对象时抛出 `UdbxNotFoundError`，不得返回 `null`。
 - `list(options)` 默认按 `SmID` 升序返回；`ids` 过滤不改变排序语义。
 - `count()` 读取物理表真实行数，不以 `DatasetInfo.getObjectCount()` 或 `SmRegister.SmObjectCount` 缓存为准。
+- `UdbxDataSource.querySpatial(datasetName, options)` 是视口空间查询入口，成功结果只允许 `rtree` 或 `envelope_cache`。
 - `update(id, ...)` 和 `delete(id)` 的目标对象不存在时抛出 `UdbxNotFoundError`。
 
 ## 相关文档

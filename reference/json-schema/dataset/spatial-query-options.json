@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/dataset/spatial-query-options.json",
+  "title": "SpatialQueryOptions",
+  "description": "Viewport spatial query options",
+  "type": "object",
+  "required": ["bounds", "limit"],
+  "properties": {
+    "bounds": {
+      "$ref": "../spatial/bounding-box.json",
+      "description": "Viewport bounds"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum number of viewport matches to return"
+    },
+    "requiredIds": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "uniqueItems": true,
+      "description": "Feature IDs that must be appended after viewport matches"
+    }
+  },
+  "additionalProperties": false
+}

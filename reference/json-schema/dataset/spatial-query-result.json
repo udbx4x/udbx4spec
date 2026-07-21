@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/dataset/spatial-query-result.json",
+  "title": "SpatialQueryResult",
+  "description": "Viewport spatial query result and execution facts",
+  "type": "object",
+  "required": ["features", "queriedBounds", "strategy", "hasMore"],
+  "properties": {
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "../feature/feature.json"
+      },
+      "description": "Deduplicated viewport matches and required features"
+    },
+    "queriedBounds": {
+      "$ref": "../spatial/bounding-box.json",
+      "description": "Bounds actually queried"
+    },
+    "strategy": {
+      "$ref": "../enum/spatial-query-strategy.json",
+      "description": "Strategy actually used"
+    },
+    "hasMore": {
+      "type": "boolean",
+      "description": "Whether additional viewport matches exist"
+    }
+  },
+  "additionalProperties": false
+}

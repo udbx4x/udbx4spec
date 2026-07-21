@@ -5,6 +5,8 @@
 1. **保留规范语义**：类名、方法名、数据模型与规范一致
 2. **接纳语言惯用法**：同步/异步、生命周期管理、类型系统表达方式随语言特性变化
 
+本任务新增的 TypeScript 声明与 Java 接口均为 reference-only 规范参考，不表示对应 SDK 已实现；Go 映射和三端运行时实现将在后续任务中完成。
+
 ---
 
 ## TypeScript
@@ -63,6 +65,10 @@ export interface TextGeometry {
   readonly subTexts?: readonly TextSubText[];
 }
 ```
+
+### 视口空间查询类型
+
+TypeScript 使用只读对象和字符串联合类型表达契约：`BoundingBox` 是四字段对象，`SpatialQueryOptions` 包含必填的 `bounds` 与 `limit` 以及可选的 `requiredIds`，`SpatialQueryResult<TFeature>` 返回只读 `features`、`queriedBounds`、`strategy` 与 `hasMore`。`SpatialQueryReason` 用于错误原因和 capability 诊断。普通 `QueryOptions` 继续只包含 `ids`、`limit`、`offset`。
 
 ### 异步迭代器实现
 
@@ -167,7 +173,7 @@ export class BrowserDatasetClient<T> implements DatasetClient<T> {
 
 ## Java
 
-公开 API 稳定面以 [`08-api-stable-surface.md`](./08-api-stable-surface.md) 为准。Java 可以使用同步 API、异常、`AutoCloseable` 和 Java 集合类型；`getById` 找不到对象时必须抛出 `UdbxNotFoundError`。
+公开 API 稳定面以 [`08-api-stable-surface.md`](./08-api-stable-surface.md) 为准。Java 可以使用同步 API、异常、`AutoCloseable` 和 Java 集合类型；`getById` 找不到对象时必须抛出 `UdbxNotFoundError`。所有 Java 枚举参考类型统一放在 `com.supermap.udbx.enums` 包中，禁止使用 Java 保留字 `enum` 作为包名。
 
 ### 基本类型映射表
 
@@ -179,6 +185,10 @@ export class BrowserDatasetClient<T> implements DatasetClient<T> {
 | `Feature[]` | `List<Feature>` |
 | `Stream<T>` | `Stream<T>` (Java 8+) |
 | `Map<K,V>` | `Map<K,V>` |
+
+### 视口空间查询类型
+
+Java 使用 `BoundingBox`、`SpatialQueryOptions` 和 `SpatialQueryResult` 接口。结果中的要素集合映射为 `List<? extends Feature>`；`SpatialQueryStrategy` 与用于错误原因和 capability 诊断的 `SpatialQueryReason` 通过 `getValue()` 暴露规范字符串值。普通 `QueryOptions` 不承担空间查询语义。
 
 ### 抽象类 vs 接口
 
@@ -297,6 +307,10 @@ try (UdbxDataSource ds = UdbxDataSource.open("/path/to/data.udbx")) {
     // ...
 } // 自动关闭
 ```
+
+视口空间查询统一定义在数据源入口：Java、TypeScript 使用
+`querySpatial(datasetName, options)`，Go 使用 `QuerySpatial(datasetName, options)`。
+查询成功结果只允许 `rtree` 或 `envelope_cache`；错误原因通过各语言惯用的错误通道表达。
 
 ---
 
@@ -917,4 +931,4 @@ pub fn open(path: &str) -> Result<UdbxDataSource> {
 - [`01-naming-conventions.md`](./01-naming-conventions.md) — 类名、方法名规范
 - [`02-geometry-model.md`](./02-geometry-model.md) — 几何数据模型
 - [`reference/typescript/udbx4spec.d.ts`](../reference/typescript/udbx4spec.d.ts) — TypeScript 参考定义
-- [`reference/java/`](../reference/java/) — Java 伪接口参考
+- [`reference/java/`](../reference/java/) — 可编译 Java 参考契约

@@ -11,3 +11,4 @@ import com.supermap.udbx.feature.PointFeature;
  * @see com.supermap.udbx.feature.PointGeometry
  */
 public interface PointDataset extends VectorDataset<PointFeature> {
+}

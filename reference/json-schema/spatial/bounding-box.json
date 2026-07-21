@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/udbx4x/udbx4spec/schemas/spatial/bounding-box.json",
+  "title": "BoundingBox",
+  "description": "Axis-aligned spatial bounds for viewport queries",
+  "type": "object",
+  "required": ["minX", "minY", "maxX", "maxY"],
+  "properties": {
+    "minX": {
+      "type": "number",
+      "description": "Minimum X coordinate"
+    },
+    "minY": {
+      "type": "number",
+      "description": "Minimum Y coordinate"
+    },
+    "maxX": {
+      "type": "number",
+      "description": "Maximum X coordinate"
+    },
+    "maxY": {
+      "type": "number",
+      "description": "Maximum Y coordinate"
+    }
+  },
+  "additionalProperties": false
+}

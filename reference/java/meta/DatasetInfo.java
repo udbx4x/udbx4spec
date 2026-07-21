@@ -1,6 +1,6 @@
 package com.supermap.udbx.meta;
 
-import com.supermap.udbx.enum.DatasetKind;
+import com.supermap.udbx.enums.DatasetKind;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -65,6 +65,14 @@ public interface DatasetInfo {
      */
     @Nullable
     Integer getGeometryType();
+
+    /**
+     * 获取数据集空间范围。
+     *
+     * @return 数据集空间范围，不可用时为 null
+     */
+    @Nullable
+    BoundingBox getExtent();
 
     /**
      * 获取字段元信息列表。

@@ -2,6 +2,18 @@
 
 本目录存放规范资产的本地生成和检查脚本。脚本必须可重复执行，输出结果应与规范文档和 manifest 保持一致。
 
+## 验证视口空间查询契约
+
+首次运行先安装锁定的本地工具链，再执行契约测试：
+
+```bash
+cd udbx4spec
+npm install
+npm run test:spatial-query-contract
+```
+
+测试使用本仓库的 Ajv 2020 验证完整 JSON Schema 引用图，并使用本仓库的 TypeScript 编译器检查参考声明；不依赖全局工具或相邻 SDK 仓库。
+
 ## 生成 Golden GAIA Bytes
 
 ```bash
