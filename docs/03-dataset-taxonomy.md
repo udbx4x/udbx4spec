@@ -18,6 +18,10 @@ UDBX 文件格式在 `SmRegister` 系统表中使用 `SmDatasetType` 整数字�
 | `text` | 7 | 2D | `SmGeometry` / `SmIndexKey` | 文本数据集，`SmGeometry` 存储 GeoText，`SmIndexKey` 存储对象范围 |
 | `cad` | 149 | 2D/3D | `SmGeometry` | CAD 数据集，使用 SuperMap GeoHeader 自定义二进制格式 |
 
+## 视口空间查询覆盖
+
+`querySpatial` 契约（见 `08-api-stable-surface.md`）覆盖 `point`、`line`、`region`、`pointZ`、`lineZ`、`regionZ`、`text`、`cad` 八类空间数据集；`tabular` 不适用。该覆盖集合是跨语言契约的一部分：各语言 SDK 必须支持同一集合。当前 Go 已实现全部覆盖类型；Java/TypeScript 运行时待实现。
+
 ## 语言映射参考
 
 ### TypeScript

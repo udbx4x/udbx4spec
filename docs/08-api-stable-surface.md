@@ -97,9 +97,11 @@
 - 缓存预算的具体额度、15% 预取、并发控制与防抖参数不属于格式契约，由各 SDK 或工具运行时自行决定。
 - `bounded_sample` 等非空间采样只属于 Viewer 工具层预览策略，不属于 SDK `QuerySpatial` 成功结果。
 
+覆盖数据集类型：`point`、`line`、`region`、`pointZ`、`lineZ`、`regionZ`、`text`、`cad` 均通过统一入口 `querySpatial` 查询；`tabular` 不适用。数据集类型覆盖集合属于契约：跨语言实现必须支持同一集合，不得只实现部分类型；对集合外 kind 调用时以 `unsupported_dataset_kind` 失败。
+
 `SpatialQueryStrategy` 的有序规范值仅为 `rtree`、`envelope_cache`。`SpatialQueryReason` 只用于失败原因和 capability 诊断，不进入成功结果；其有序规范值为 `invalid_viewport`、`spatial_index_unavailable`、`envelope_cache_budget_exceeded`、`query_timeout`、`corrupt_geometry`、`unsupported_dataset_kind`。
 
-本阶段只固定 JSON Schema、TypeScript 与 Java reference，不表示 Java 或 TypeScript SDK 已实现；Go 类型与运行时能力在后续任务实现。
+实现状态：Go SDK 已实现 `QuerySpatial` 并覆盖 Point/Line/Region/Z/Text/CAD 全部契约类型（RTree 与 envelope cache，2026-07-23 macOS 打包验收通过）；Java 与 TypeScript SDK 尚未实现运行时 `querySpatial`，当前仅有 JSON Schema、TypeScript 与 Java reference。
 
 ## `count` 语义
 
